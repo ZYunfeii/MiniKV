@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package kv;
+
+service KVServer {
+    rpc SetKV(ReqKV) returns (SetKVResponse) {}
+    rpc GetKV(ReqK) returns (GetKResponse) {}
+}
+
+message ReqKV {
+    uint32 encoding = 1;
+    string key = 2;
+    string val = 3;
+}
+
+message SetKVResponse {
+    bool flag = 1;
+}
+
+message ReqK {
+    string key = 1;
+}
+
+message GetKResponse {
+    bool flag = 1;
+    repeated string val = 2;
+}
