@@ -6,7 +6,12 @@
 #include <algorithm>
 #include <vector>
 #include "../type/encoding.h"
+#include "../log/log.h"
 
+typedef struct kvString {
+    uint32_t len;
+    std::string data;
+} kvString;
 typedef struct Entry {
     uint32_t encoding;
     std::string key;
@@ -14,12 +19,12 @@ typedef struct Entry {
     ~Entry() {
         switch (encoding) {
             case MiniKV_STRING: {
-                std::string* strp = (std::string*)data;
+                kvString* strp = (kvString*)data;
                 delete strp;
                 break;
             }
             case MiniKV_LIST: {
-                std::list<std::string>* listp = (std::list<std::string>*)data;
+                std::list<kvString>* listp = (std::list<kvString>*)data;
                 delete listp;
                 break;
             }
@@ -28,8 +33,9 @@ typedef struct Entry {
 } Entry;
 
 class HashTable {
-private:
+public:
     std::vector<std::list<std::shared_ptr<Entry>>> hash_;
+private:
     int hash(std::string key) {
         unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
         unsigned int hash = 0;
@@ -44,12 +50,12 @@ private:
             case MiniKV_STRING : {
                 entry->encoding = encoding;
                 entry->key = key;
-                entry->data = new std::string(val);
+                entry->data = new kvString{(uint32_t)val.size(), val};
                 break;
             }
             case MiniKV_LIST : {
-                auto node = new std::list<std::string>;
-                node->push_back(val);
+                auto node = new std::list<kvString>;
+                node->push_back(kvString{(uint32_t)val.size(), val});
                 entry->encoding = encoding;
                 entry->key = key;
                 entry->data = node;
@@ -66,7 +72,12 @@ public:
         int slot = hash(key);
         for (auto i = hash_[slot].begin(); i != hash_[slot].end(); ++i) {
             if (i->get()->key == key) {
-                insertWithEncoding(i->get(), key, val, encoding);
+                if (i->get()->encoding == MiniKV_LIST) {
+                    std::list<kvString>* p = (std::list<kvString>*)(i->get()->data);
+                    p->push_front(kvString{(uint32_t)val.size(), val});
+                } else if (i->get()->encoding == MiniKV_STRING) {
+                    insertWithEncoding(i->get(), key, val, encoding);
+                }
                 return;
             }
         }
@@ -75,30 +86,24 @@ public:
         hash_[slot].push_front(std::shared_ptr<Entry>(entry)); 
     }
 
-    std::vector<std::string> get(std::string key) {
+    void get(std::string key, std::vector<std::string>& res) {
         int slot = hash(key);
-        std::vector<std::string> res;
         for (auto i = hash_[slot].begin(); i != hash_[slot].end(); ++i) {
             if (i->get()->key == key) {
                 if (i->get()->encoding == MiniKV_STRING) {
-                    res.push_back(*(std::string*)(i->get()->data));
-                    return res;
+                    res.push_back(((kvString*)(i->get()->data))->data);
                 }
                 if (i->get()->encoding == MiniKV_LIST) {
-                    std::list<std::string>* p = (std::list<std::string>*)(i->get()->data);
+                    std::list<kvString>* p = (std::list<kvString>*)(i->get()->data);
                     if (p->empty()) {
-                        return {};
                     } else {
                         for (auto it = p->begin(); it != p->end(); ++it) {
-                            res.push_back(*it);
+                            res.push_back(it->data);
                         }
-                        return res;
                     }
                 }
             }
-        }
-        
-        return {};
+        }   
     }
     void del(std::string key) {
         int slot = hash(key);

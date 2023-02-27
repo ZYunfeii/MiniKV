@@ -5,21 +5,16 @@
 #include <string>
 #include <functional>
 #include <grpcpp/grpcpp.h>
-#include <mutex>
-#include <shared_mutex>
 #include "../proto/kvserver.grpc.pb.h"
-#include "hash.h"
-
+#include "db.h"
+extern std::shared_mutex smutex_;
 class KVService final : public kv::KVServer::Service {
 private:
-    std::shared_mutex smutex_;
-    grpc::Status SetKV(grpc::ServerContext* context, const kv::ReqKV* req, kv::SetKVResponse* res) override {
-        std::unique_lock<std::shared_mutex> lk(smutex_);
+    grpc::Status SetKV(grpc::ServerContext* context, const kv::ReqKV* req, kv::SetKVResponse* res) override {      
         grpc::Status status = setCallback_(context, req, res);
         return status;
     }
     grpc::Status GetKV(grpc::ServerContext* context, const kv::ReqK* req, kv::GetKResponse* res) override {
-        std::shared_lock<std::shared_mutex> lk(smutex_);
         grpc::Status status = getCallback_(context, req, res);
         return status;
     }
@@ -37,17 +32,12 @@ public:
 };
 
 
-
-#define HASH_SIZE_INIT 512
-
 class KVServer {
 private:
-    std::unique_ptr<HashTable> hash1_;
-    std::unique_ptr<HashTable> hash2_;
+    std::unique_ptr<MiniKVDB> db_;
     std::string ip_;
     uint32_t port_;
-    KVService* kvService_;
-    uint64_t hashSize_;
+    std::unique_ptr<KVService> kvService_;
     void serviceCallbackSet();
 public:
     KVServer(std::string ip, uint32_t port);

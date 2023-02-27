@@ -2,9 +2,8 @@
 #include "kvserver.h"
 
 KVServer::KVServer(std::string ip, uint32_t port) : ip_(ip), port_(port){
-    kvService_ = new KVService();
-    hashSize_ = HASH_SIZE_INIT;
-    hash1_ = std::unique_ptr<HashTable>(new HashTable(hashSize_));
+    kvService_ = std::unique_ptr<KVService>(new KVService());
+    db_ = std::unique_ptr<MiniKVDB>(new MiniKVDB);
     serviceCallbackSet();
 }
 
@@ -13,14 +12,19 @@ void KVServer::serviceCallbackSet() {
         uint32_t encoding = req->encoding();
         std::string key = req->key();
         std::string val = req->val();
-        hash1_->insert(key, val, encoding);
+        std::unique_lock<std::shared_mutex> lk(smutex_);
+        db_->insert(key, val, encoding);
+        lk.unlock();
         res->set_flag(true);
         return grpc::Status::OK;
     });
 
     kvService_->setGetKCallback([this](grpc::ServerContext* context, const kv::ReqK* req, kv::GetKResponse* res)->grpc::Status{
         std::string key = req->key();
-        std::vector<std::string> v = hash1_->get(key);
+        std::vector<std::string> v;
+        std::shared_lock<std::shared_mutex> lk(smutex_);
+        db_->get(key, v);
+        lk.unlock();
         if (v.empty()) {
             res->set_flag(false);
             return grpc::Status::OK;
@@ -37,7 +41,7 @@ void KVServer::serve() {
     grpc::ServerBuilder builder;
     std::string serverAddr = ip_ + ":" + std::to_string(port_);
     builder.AddListeningPort(serverAddr, grpc::InsecureServerCredentials());
-    builder.RegisterService(kvService_);
+    builder.RegisterService(kvService_.get());
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
     fprintf(stdout, "Server listening on:%s", serverAddr.data());
     fflush(stdout);

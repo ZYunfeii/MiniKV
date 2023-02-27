@@ -18,7 +18,10 @@ add_library(grpc_proto ${proto_srcs} ${proto_hdrs} ${grpc_srcs} ${grpc_hdrs})
 target_link_libraries(grpc_proto ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})
 
 file(GLOB_RECURSE server_src "${CMAKE_CURRENT_BINARY_DIR}/../server/*.cc")
+set(server_src "${server_src};${CMAKE_CURRENT_BINARY_DIR}/../log/log.cc")
+
 file(GLOB_RECURSE client_src "${CMAKE_CURRENT_BINARY_DIR}/../client/*.cc")
+set(client_src "${client_src};${CMAKE_CURRENT_BINARY_DIR}/../log/log.cc")
 
 add_executable(kvserver ${server_src})
 add_executable(kvclient ${client_src})
