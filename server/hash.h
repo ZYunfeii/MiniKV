@@ -10,7 +10,7 @@
 
 typedef struct kvString {
     uint32_t len;
-    std::string data;
+    char* data;
 } kvString;
 typedef struct Entry {
     uint32_t encoding;
@@ -50,12 +50,12 @@ private:
             case MiniKV_STRING : {
                 entry->encoding = encoding;
                 entry->key = key;
-                entry->data = new kvString{(uint32_t)val.size(), val};
+                entry->data = new kvString{(uint32_t)val.size(), val.data()};
                 break;
             }
             case MiniKV_LIST : {
                 auto node = new std::list<kvString>;
-                node->push_back(kvString{(uint32_t)val.size(), val});
+                node->push_back(kvString{(uint32_t)val.size(), val.data()});
                 entry->encoding = encoding;
                 entry->key = key;
                 entry->data = node;
@@ -74,7 +74,7 @@ public:
             if (i->get()->key == key) {
                 if (i->get()->encoding == MiniKV_LIST) {
                     std::list<kvString>* p = (std::list<kvString>*)(i->get()->data);
-                    p->push_front(kvString{(uint32_t)val.size(), val});
+                    p->push_front(kvString{(uint32_t)val.size(), val.data()});
                 } else if (i->get()->encoding == MiniKV_STRING) {
                     insertWithEncoding(i->get(), key, val, encoding);
                 }
