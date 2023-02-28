@@ -1,11 +1,15 @@
 #ifndef IO_H
 #define IO_H
 #include <iostream>
-
+#include "../log/log.h"
 class KVio {
 public:
     KVio(std::string fileName) : fileName_(fileName){
-        fp_ = fopen(fileName_.data(), "w+");
+        fp_ = fopen(fileName_.data(), "r");
+        if (!fp_) {
+            kvlogi("rdb file doesn't exits.");
+            return;
+        }
     }
     size_t kvioFileWrite(const void* buf, std::size_t len) {
         size_t retval;
@@ -25,8 +29,20 @@ public:
         }
         return len;
     }
+    bool reachEOF() {
+        return feof(fp_);
+    }
+    bool emptyFile() {
+        if (!fp_) return true;
+        getc(fp_);
+        if (feof(fp_)) {
+            return true; // empty file
+        }
+        rewind(fp_);
+        return false;
+    }
     void clearFile() {
-        fp_ = fopen(fileName_.data(), "w+");
+        fp_ = fopen(fileName_.data(), "w+"); // "w+" will clear the file or create the new file
     }
     inline void flushCache() {
         fflush(fp_);

@@ -44,13 +44,15 @@ private:
     void makeStringObject2RDBEntry(rdbEntry* rdbe, std::string key, uint32_t encoding, void* data);
     void makeListObject2RDBEntry(rdbEntry* rdbe, std::string key, uint32_t encoding, void* data);
     void rdbEntryWrite(rdbEntry* rdbe);
+    void rdbFileReadInitDB();
+    void rdbLoadEntry();
 public:
     void insert(std::string key, std::string val, uint32_t encoding);
     void get(std::string key, std::vector<std::string>& res);
     MiniKVDB();
     ~MiniKVDB();
     void rdbSave();
-    void rdbFileReadInitDB();
+    
 
 } MiniKVDB;
 
