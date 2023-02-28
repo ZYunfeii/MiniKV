@@ -11,14 +11,23 @@
 #define THREAD_POOL_NUM 4
 #define RDB_INTERVAL 5000 // 5000ms rdb save triggered
 #define RDB_FILE_NAME "minikv.rdb"
+
+
+#define CHECK_REST_AND_LOG(x)          \
+    do {                               \
+        if (x < 0) {                \
+            kvloge("rdb read error!"); \
+        }                              \
+    } while (0)
+
 extern std::shared_mutex smutex_;
 extern ThreadPool threadpool;
 typedef struct rdbEntry {
     uint32_t totalLen;
     uint32_t encoding;
     uint32_t keyLen;
-    char* key;
-    char* data;
+    std::shared_ptr<char[]> key;
+    std::shared_ptr<char[]> data;
 } rdbEntry;
  
 
@@ -29,6 +38,7 @@ private:
     uint64_t hashSize_; 
     std::unique_ptr<KVio> io_;
     std::shared_ptr<KVTimer> timer_;
+    rdbEntry* rdbe_;
 
     void saveKVWithEncoding(std::string key, uint32_t encoding, void* data);
     void makeStringObject2RDBEntry(rdbEntry* rdbe, std::string key, uint32_t encoding, void* data);
@@ -38,7 +48,9 @@ public:
     void insert(std::string key, std::string val, uint32_t encoding);
     void get(std::string key, std::vector<std::string>& res);
     MiniKVDB();
+    ~MiniKVDB();
     void rdbSave();
+    void rdbFileReadInitDB();
 
 } MiniKVDB;
 

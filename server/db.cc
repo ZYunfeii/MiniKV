@@ -10,8 +10,15 @@ MiniKVDB::MiniKVDB() {
     hashSize_ = HASH_SIZE_INIT;
     hash1_ = std::unique_ptr<HashTable>(new HashTable(hashSize_));
     io_ = std::unique_ptr<KVio>(new KVio(RDB_FILE_NAME));
+    rdbe_ = new rdbEntry();
     timer_ = std::shared_ptr<KVTimer>(new KVTimer());
     timer_->start(RDB_INTERVAL, std::bind(&MiniKVDB::rdbSave, this));
+}
+
+MiniKVDB::~MiniKVDB() {
+    timer_->stop();
+    io_->flushCache();
+    delete rdbe_;
 }
 
 void MiniKVDB::insert(std::string key, std::string val, uint32_t encoding) {
@@ -25,6 +32,7 @@ void MiniKVDB::get(std::string key, std::vector<std::string>& res) {
 void MiniKVDB::rdbSave() {
     std::unique_lock<std::shared_mutex> lk(smutex_);
     kvlogi("rdb save triggered!");
+    io_->clearFile();
     for (int i = 0; i < hash1_->hash_.size(); ++i) {
         auto d = hash1_->hash_[i];
         if (d.empty()) {
@@ -33,27 +41,25 @@ void MiniKVDB::rdbSave() {
         for (auto it = d.begin(); it != d.end(); ++it) {
             std::string key = it->get()->key;
             uint32_t encoding = it->get()->encoding;
-            void* data = it->get()->data;
+            void* data = it->get()->data.get();
             saveKVWithEncoding(key, encoding, data);
         }
     }
-    io_->flushCache();
+    io_->flushCache(); // C cache->Page cache
 }
 
 void MiniKVDB::saveKVWithEncoding(std::string key, uint32_t encoding, void* data) {
-    rdbEntry* rdbe = new rdbEntry;
     switch (encoding) {
         case MiniKV_STRING : {
-            makeStringObject2RDBEntry(rdbe, key, encoding, data);
+            makeStringObject2RDBEntry(rdbe_, key, encoding, data);
             break;
         }
         case MiniKV_LIST : {
-            makeListObject2RDBEntry(rdbe, key, encoding, data);
+            makeListObject2RDBEntry(rdbe_, key, encoding, data);
             break;
         }
     }
-    rdbEntryWrite(rdbe);
-    delete rdbe;
+    rdbEntryWrite(rdbe_);
 }
 
 void MiniKVDB::makeStringObject2RDBEntry(rdbEntry* rdbe, std::string key, uint32_t encoding, void* data) {
@@ -63,11 +69,15 @@ void MiniKVDB::makeStringObject2RDBEntry(rdbEntry* rdbe, std::string key, uint32
     rdbe->totalLen = totalLen;
     rdbe->encoding = encoding;
     rdbe->keyLen = keyLen;
-    rdbe->key = key.data();
-    char tmp[sizeofUint32 + strlen(kvStr->data)];
-    memcpy(tmp, kvStr, sizeofUint32);
-    memcpy(tmp + sizeofUint32, kvStr->data, kvStr->len);
-    rdbe->data = tmp;
+
+    char* buf = new char[keyLen]; 
+    memcpy(buf, key.data(), keyLen);
+    rdbe->key = std::shared_ptr<char[]>(buf);
+
+    buf = new char[sizeofUint32 + strlen(kvStr->data.get())];
+    memcpy(buf, kvStr, sizeofUint32);
+    memcpy(buf + sizeofUint32, kvStr->data.get(), kvStr->len);
+    rdbe->data = std::shared_ptr<char[]>(buf);
 }
 
 void MiniKVDB::makeListObject2RDBEntry(rdbEntry* rdbe, std::string key, uint32_t encoding, void* data) {
@@ -75,34 +85,58 @@ void MiniKVDB::makeListObject2RDBEntry(rdbEntry* rdbe, std::string key, uint32_t
     auto lst = (std::list<kvString>*)data;
     uint32_t totalLen = fixedEntryHeadLen + keyLen;
     for (auto it = lst->begin(); it != lst->end(); ++it) {
-        char tmp[sizeofUint32 + strlen(it->data)];
-        memcpy(tmp, (char*)(&(*it)), sizeofUint32);
-        memcpy(tmp + sizeofUint32, it->data, it->len);
-        rdbe->data = tmp;
+        char* buf = new char[sizeofUint32 + strlen(it->data.get())];
+        memcpy(buf, (char*)(&(*it)), sizeofUint32);
+        memcpy(buf + sizeofUint32, it->data.get(), it->len);
+        rdbe->data = std::shared_ptr<char[]>(buf);
         totalLen += sizeofUint32 + it->len;
     }
     rdbe->totalLen = totalLen;
     rdbe->encoding = encoding;
     rdbe->keyLen = keyLen;
-    rdbe->key = key.data();
+    char* buf = new char[keyLen]; 
+    memcpy(buf, key.data(), keyLen);
+    rdbe->key = std::shared_ptr<char[]>(buf);
 }
 
 void MiniKVDB::rdbEntryWrite(rdbEntry* rdbe) {
-    int t = io_->kvioFileWrite(rdbe, fixedEntryHeadLen); // write totalLen, encoding and keyLen
-    if (t < 0) {
-        kvloge("rdb write error: key:%s", rdbe->key);
-        return;
-    }
+    int rest = io_->kvioFileWrite(rdbe, fixedEntryHeadLen); // write totalLen, encoding and keyLen
+    CHECK_REST_AND_LOG(rest);
     size_t keyLen = rdbe->keyLen;
     size_t dataLen = rdbe->totalLen - fixedEntryHeadLen - keyLen;
-    t = io_->kvioFileWrite(rdbe->key, keyLen);
-    if (t < 0) {
-        kvloge("rdb write error: key:%s", rdbe->key);
-        return;
-    }
-    t = io_->kvioFileWrite(rdbe->data, dataLen);
-    if (t < 0) {
-        kvloge("rdb write error: key:%s", rdbe->key);
-        return;
+    rest = io_->kvioFileWrite(rdbe->key.get(), keyLen);
+    CHECK_REST_AND_LOG(rest);
+    rest = io_->kvioFileWrite(rdbe->data.get(), dataLen);
+    CHECK_REST_AND_LOG(rest);
+}
+
+void MiniKVDB::rdbFileReadInitDB() {
+    char fixedBuf[fixedEntryHeadLen];
+    int rest = io_->kvioFileRead(fixedBuf, fixedEntryHeadLen);
+    CHECK_REST_AND_LOG(rest);
+    int totalLen, encoding, keyLen;
+    memcpy(&totalLen, fixedBuf, sizeofUint32);
+    memcpy(&encoding, fixedBuf + sizeofUint32, sizeofUint32);
+    memcpy(&keyLen, fixedBuf + 2 * sizeofUint32, sizeofUint32);
+    std::string key;
+    char keyBuf[keyLen];
+    rest = io_->kvioFileRead(keyBuf, keyLen);
+    CHECK_REST_AND_LOG(rest);
+    key = keyBuf;
+    switch (encoding) {
+        case MiniKV_STRING : {
+            uint32_t len;
+            rest = io_->kvioFileRead(&len, sizeofUint32);
+            CHECK_REST_AND_LOG(rest);
+            char valBuf[len];
+            rest = io_->kvioFileRead(valBuf, len);
+            CHECK_REST_AND_LOG(rest);
+            // hash1_->insert(key, valBuf)
+            break;
+        }
+        case MiniKV_LIST : {
+            
+            break;
+        }
     }
 }

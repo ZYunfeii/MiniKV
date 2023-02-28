@@ -10,25 +10,13 @@
 
 typedef struct kvString {
     uint32_t len;
-    char* data;
+    std::shared_ptr<char[]> data;
 } kvString;
 typedef struct Entry {
     uint32_t encoding;
     std::string key;
-    void* data;
+    std::shared_ptr<char[]> data;
     ~Entry() {
-        switch (encoding) {
-            case MiniKV_STRING: {
-                kvString* strp = (kvString*)data;
-                delete strp;
-                break;
-            }
-            case MiniKV_LIST: {
-                std::list<kvString>* listp = (std::list<kvString>*)data;
-                delete listp;
-                break;
-            }
-        }
     }
 } Entry;
 
@@ -50,15 +38,23 @@ private:
             case MiniKV_STRING : {
                 entry->encoding = encoding;
                 entry->key = key;
-                entry->data = new kvString{(uint32_t)val.size(), val.data()};
+                char* valBuf = new char[val.size()];
+                memcpy(valBuf, val.data(), val.size());
+                entry->data = std::shared_ptr<char[]>(
+                                (char*)new kvString{(uint32_t)val.size(), 
+                                std::shared_ptr<char[]>(valBuf)}
+                                );
                 break;
             }
             case MiniKV_LIST : {
                 auto node = new std::list<kvString>;
-                node->push_back(kvString{(uint32_t)val.size(), val.data()});
+                char* valBuf = new char[val.size()];
+                memcpy(valBuf, val.data(), val.size());
+                node->push_back(kvString{(uint32_t)val.size(), 
+                                          std::shared_ptr<char[]>(valBuf)});
                 entry->encoding = encoding;
                 entry->key = key;
-                entry->data = node;
+                entry->data = std::shared_ptr<char[]>((char*)node);
                 break;
             }
         }
@@ -73,8 +69,10 @@ public:
         for (auto i = hash_[slot].begin(); i != hash_[slot].end(); ++i) {
             if (i->get()->key == key) {
                 if (i->get()->encoding == MiniKV_LIST) {
-                    std::list<kvString>* p = (std::list<kvString>*)(i->get()->data);
-                    p->push_front(kvString{(uint32_t)val.size(), val.data()});
+                    std::list<kvString>* p = (std::list<kvString>*)(i->get()->data.get());
+                    char* valBuf = new char[val.size()];
+                    memcpy(valBuf, val.data(), val.size());
+                    p->push_front(kvString{(uint32_t)val.size(), std::shared_ptr<char[]>(valBuf)});
                 } else if (i->get()->encoding == MiniKV_STRING) {
                     insertWithEncoding(i->get(), key, val, encoding);
                 }
@@ -91,14 +89,17 @@ public:
         for (auto i = hash_[slot].begin(); i != hash_[slot].end(); ++i) {
             if (i->get()->key == key) {
                 if (i->get()->encoding == MiniKV_STRING) {
-                    res.push_back(((kvString*)(i->get()->data))->data);
+                    kvString* kvStr = (kvString*)(i->get()->data.get());
+                    std::string s(kvStr->data.get(), kvStr->data.get() + kvStr->len);
+                    res.push_back(s);
                 }
                 if (i->get()->encoding == MiniKV_LIST) {
-                    std::list<kvString>* p = (std::list<kvString>*)(i->get()->data);
+                    std::list<kvString>* p = (std::list<kvString>*)(i->get()->data.get());
                     if (p->empty()) {
                     } else {
                         for (auto it = p->begin(); it != p->end(); ++it) {
-                            res.push_back(it->data);
+                            std::string s(it->data.get(), it->data.get() + it->len);
+                            res.push_back(s);
                         }
                     }
                 }
