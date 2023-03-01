@@ -33,7 +33,7 @@ public:
     bool reachEOF() {
         return feof(fp_);
     }
-    bool emptyFile() {
+    bool empty() {
         if (!fp_) return true;
         getc(fp_);
         if (feof(fp_)) {

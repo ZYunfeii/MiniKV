@@ -48,6 +48,7 @@ private:
     void rdbFileReadInitDB();
     void rdbLoadEntry();
     void rdbSave();
+    // void fixedTimeDeleteExpiredKey();
 public:
     void insert(std::string key, std::string val, uint32_t encoding);
     void get(std::string key, std::vector<std::string>& res);

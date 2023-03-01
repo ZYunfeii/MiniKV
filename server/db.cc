@@ -59,6 +59,7 @@ int MiniKVDB::setExpire(std::string key, uint64_t expires) {
 }
 
 void MiniKVDB::rdbSave() {
+    // TODO: save the expire time
     std::unique_lock<std::shared_mutex> lk(smutex_);
     kvlogi("rdb save triggered!");
     io_->clearFile();
@@ -187,11 +188,11 @@ void MiniKVDB::rdbLoadEntry() {
 }
 
 void MiniKVDB::rdbFileReadInitDB() {
-    if (io_->emptyFile()) {
+    if (io_->empty()) {
         kvlogi("No rdb file to load.");
         return;
     }
-    while (!io_->reachEOF()) {
+    while (!io_->empty()) {
         rdbLoadEntry();
     }
     kvlogi("Rdb file loaded.");
