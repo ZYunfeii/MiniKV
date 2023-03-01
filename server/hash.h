@@ -106,15 +106,25 @@ public:
             }
         }   
     }
+    bool exist(std::string key) {
+        int slot = hash(key);
+        for (auto i = hash_[slot].begin(); i != hash_[slot].end(); ++i) {
+            if (i->get()->key == key) {
+                return true;
+            }
+        }
+        return false;
+    }
     int del(std::string key) {
         int slot = hash(key);
-        std::for_each(hash_[slot].begin(), hash_[slot].end(), [&key, &slot, this](std::shared_ptr<Entry> p) {
+        bool flag = false;
+        std::for_each(hash_[slot].begin(), hash_[slot].end(), [&key, &slot, &flag, this](std::shared_ptr<Entry> p) {
             if (p.get()->key == key) {
                 hash_[slot].remove(p);
-                return MiniKV_DEL_SUCCESS;
+                flag = true;
             }
         });
-        return MiniKV_DEL_FAIL;
+        return flag ? MiniKV_DEL_SUCCESS : MiniKV_DEL_FAIL;
     }
 };
 

@@ -56,3 +56,20 @@ GetRes KVClient::getK(std::string key) {
     ans.data = data;
     return ans;
 }
+
+int KVClient::setExpires(std::string key, uint64_t millisecond) {
+    auto now = std::chrono::system_clock::now(); 
+    auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+    uint64_t expires = timestamp + millisecond;
+    kv::ReqExpire req;
+    kv::SetExpireResponse res;
+    req.set_key(key);
+    req.set_expires(expires);
+    grpc::ClientContext context;
+    grpc::Status status = stub_->SetExpire(&context, req, &res);
+    if (!status.ok() || res.flag() == false) {
+        // TODO: log
+        return MiniKV_SET_EXPIRE_FAIL;
+    }
+    return MiniKV_SET_EXPIRE_SUCCESS;
+}

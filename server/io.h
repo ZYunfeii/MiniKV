@@ -24,6 +24,7 @@ public:
         size_t retval;
         while (len) {
             retval = fread(buf, 1, len, fp_);
+            if (retval < 0) return -1;
             len -= retval;
             buf = (char*)buf + retval;
         }

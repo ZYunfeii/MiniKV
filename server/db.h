@@ -35,6 +35,7 @@ typedef class MiniKVDB {
 private:
     std::unique_ptr<HashTable> hash1_;
     std::unique_ptr<HashTable> hash2_; 
+    std::unique_ptr<HashTable> expires_;
     uint64_t hashSize_; 
     std::unique_ptr<KVio> io_;
     std::shared_ptr<KVTimer> timer_;
@@ -46,14 +47,14 @@ private:
     void rdbEntryWrite(rdbEntry* rdbe);
     void rdbFileReadInitDB();
     void rdbLoadEntry();
+    void rdbSave();
 public:
     void insert(std::string key, std::string val, uint32_t encoding);
     void get(std::string key, std::vector<std::string>& res);
     int del(std::string key);
+    int setExpire(std::string key, uint64_t expires);
     MiniKVDB();
     ~MiniKVDB();
-    void rdbSave();
-    
 
 } MiniKVDB;
 

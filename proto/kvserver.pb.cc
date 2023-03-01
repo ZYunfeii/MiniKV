@@ -17,6 +17,31 @@
 
 PROTOBUF_PRAGMA_INIT_SEG
 namespace kv {
+constexpr SetExpireResponse::SetExpireResponse(
+  ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
+  : flag_(false){}
+struct SetExpireResponseDefaultTypeInternal {
+  constexpr SetExpireResponseDefaultTypeInternal()
+    : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
+  ~SetExpireResponseDefaultTypeInternal() {}
+  union {
+    SetExpireResponse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT SetExpireResponseDefaultTypeInternal _SetExpireResponse_default_instance_;
+constexpr ReqExpire::ReqExpire(
+  ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
+  : key_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
+  , expires_(uint64_t{0u}){}
+struct ReqExpireDefaultTypeInternal {
+  constexpr ReqExpireDefaultTypeInternal()
+    : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
+  ~ReqExpireDefaultTypeInternal() {}
+  union {
+    ReqExpire _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ReqExpireDefaultTypeInternal _ReqExpire_default_instance_;
 constexpr ReqKV::ReqKV(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : key_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
@@ -81,11 +106,26 @@ struct GetKResponseDefaultTypeInternal {
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT GetKResponseDefaultTypeInternal _GetKResponse_default_instance_;
 }  // namespace kv
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_kvserver_2eproto[5];
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_kvserver_2eproto[7];
 static constexpr ::PROTOBUF_NAMESPACE_ID::EnumDescriptor const** file_level_enum_descriptors_kvserver_2eproto = nullptr;
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_kvserver_2eproto = nullptr;
 
 const uint32_t TableStruct_kvserver_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::kv::SetExpireResponse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::kv::SetExpireResponse, flag_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::kv::ReqExpire, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::kv::ReqExpire, key_),
+  PROTOBUF_FIELD_OFFSET(::kv::ReqExpire, expires_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::kv::ReqKV, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -126,14 +166,18 @@ const uint32_t TableStruct_kvserver_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE
   PROTOBUF_FIELD_OFFSET(::kv::GetKResponse, val_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::kv::ReqKV)},
-  { 9, -1, -1, sizeof(::kv::SetKVResponse)},
-  { 16, -1, -1, sizeof(::kv::DelKVResponse)},
-  { 23, -1, -1, sizeof(::kv::ReqK)},
-  { 30, -1, -1, sizeof(::kv::GetKResponse)},
+  { 0, -1, -1, sizeof(::kv::SetExpireResponse)},
+  { 7, -1, -1, sizeof(::kv::ReqExpire)},
+  { 15, -1, -1, sizeof(::kv::ReqKV)},
+  { 24, -1, -1, sizeof(::kv::SetKVResponse)},
+  { 31, -1, -1, sizeof(::kv::DelKVResponse)},
+  { 38, -1, -1, sizeof(::kv::ReqK)},
+  { 45, -1, -1, sizeof(::kv::GetKResponse)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::kv::_SetExpireResponse_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::kv::_ReqExpire_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::kv::_ReqKV_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::kv::_SetKVResponse_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::kv::_DelKVResponse_default_instance_),
@@ -142,20 +186,23 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_kvserver_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\016kvserver.proto\022\002kv\"3\n\005ReqKV\022\020\n\010encodin"
-  "g\030\001 \001(\r\022\013\n\003key\030\002 \001(\t\022\013\n\003val\030\003 \001(\t\"\035\n\rSet"
-  "KVResponse\022\014\n\004flag\030\001 \001(\010\"\035\n\rDelKVRespons"
-  "e\022\014\n\004flag\030\001 \001(\010\"\023\n\004ReqK\022\013\n\003key\030\001 \001(\t\")\n\014"
-  "GetKResponse\022\014\n\004flag\030\001 \001(\010\022\013\n\003val\030\002 \003(\t2"
-  "\202\001\n\010KVServer\022\'\n\005SetKV\022\t.kv.ReqKV\032\021.kv.Se"
-  "tKVResponse\"\000\022%\n\005GetKV\022\010.kv.ReqK\032\020.kv.Ge"
-  "tKResponse\"\000\022&\n\005DelKV\022\010.kv.ReqK\032\021.kv.Del"
-  "KVResponse\"\000b\006proto3"
+  "\n\016kvserver.proto\022\002kv\"!\n\021SetExpireRespons"
+  "e\022\014\n\004flag\030\001 \001(\010\")\n\tReqExpire\022\013\n\003key\030\001 \001("
+  "\t\022\017\n\007expires\030\002 \001(\004\"3\n\005ReqKV\022\020\n\010encoding\030"
+  "\001 \001(\r\022\013\n\003key\030\002 \001(\t\022\013\n\003val\030\003 \001(\t\"\035\n\rSetKV"
+  "Response\022\014\n\004flag\030\001 \001(\010\"\035\n\rDelKVResponse\022"
+  "\014\n\004flag\030\001 \001(\010\"\023\n\004ReqK\022\013\n\003key\030\001 \001(\t\")\n\014Ge"
+  "tKResponse\022\014\n\004flag\030\001 \001(\010\022\013\n\003val\030\002 \003(\t2\267\001"
+  "\n\010KVServer\022\'\n\005SetKV\022\t.kv.ReqKV\032\021.kv.SetK"
+  "VResponse\"\000\022%\n\005GetKV\022\010.kv.ReqK\032\020.kv.GetK"
+  "Response\"\000\022&\n\005DelKV\022\010.kv.ReqK\032\021.kv.DelKV"
+  "Response\"\000\0223\n\tSetExpire\022\r.kv.ReqExpire\032\025"
+  ".kv.SetExpireResponse\"\000b\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_kvserver_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_kvserver_2eproto = {
-  false, false, 340, descriptor_table_protodef_kvserver_2eproto, "kvserver.proto", 
-  &descriptor_table_kvserver_2eproto_once, nullptr, 0, 5,
+  false, false, 471, descriptor_table_protodef_kvserver_2eproto, "kvserver.proto", 
+  &descriptor_table_kvserver_2eproto_once, nullptr, 0, 7,
   schemas, file_default_instances, TableStruct_kvserver_2eproto::offsets,
   file_level_metadata_kvserver_2eproto, file_level_enum_descriptors_kvserver_2eproto, file_level_service_descriptors_kvserver_2eproto,
 };
@@ -166,6 +213,413 @@ PROTOBUF_ATTRIBUTE_WEAK const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable
 // Force running AddDescriptors() at dynamic initialization time.
 PROTOBUF_ATTRIBUTE_INIT_PRIORITY static ::PROTOBUF_NAMESPACE_ID::internal::AddDescriptorsRunner dynamic_init_dummy_kvserver_2eproto(&descriptor_table_kvserver_2eproto);
 namespace kv {
+
+// ===================================================================
+
+class SetExpireResponse::_Internal {
+ public:
+};
+
+SetExpireResponse::SetExpireResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor();
+  if (!is_message_owned) {
+    RegisterArenaDtor(arena);
+  }
+  // @@protoc_insertion_point(arena_constructor:kv.SetExpireResponse)
+}
+SetExpireResponse::SetExpireResponse(const SetExpireResponse& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  flag_ = from.flag_;
+  // @@protoc_insertion_point(copy_constructor:kv.SetExpireResponse)
+}
+
+inline void SetExpireResponse::SharedCtor() {
+flag_ = false;
+}
+
+SetExpireResponse::~SetExpireResponse() {
+  // @@protoc_insertion_point(destructor:kv.SetExpireResponse)
+  if (GetArenaForAllocation() != nullptr) return;
+  SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+inline void SetExpireResponse::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void SetExpireResponse::ArenaDtor(void* object) {
+  SetExpireResponse* _this = reinterpret_cast< SetExpireResponse* >(object);
+  (void)_this;
+}
+void SetExpireResponse::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
+void SetExpireResponse::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+
+void SetExpireResponse::Clear() {
+// @@protoc_insertion_point(message_clear_start:kv.SetExpireResponse)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  flag_ = false;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* SetExpireResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // bool flag = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          flag_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* SetExpireResponse::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:kv.SetExpireResponse)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // bool flag = 1;
+  if (this->_internal_flag() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(1, this->_internal_flag(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:kv.SetExpireResponse)
+  return target;
+}
+
+size_t SetExpireResponse::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:kv.SetExpireResponse)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // bool flag = 1;
+  if (this->_internal_flag() != 0) {
+    total_size += 1 + 1;
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData SetExpireResponse::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSizeCheck,
+    SetExpireResponse::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*SetExpireResponse::GetClassData() const { return &_class_data_; }
+
+void SetExpireResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to,
+                      const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+  static_cast<SetExpireResponse *>(to)->MergeFrom(
+      static_cast<const SetExpireResponse &>(from));
+}
+
+
+void SetExpireResponse::MergeFrom(const SetExpireResponse& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:kv.SetExpireResponse)
+  GOOGLE_DCHECK_NE(&from, this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_flag() != 0) {
+    _internal_set_flag(from._internal_flag());
+  }
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SetExpireResponse::CopyFrom(const SetExpireResponse& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:kv.SetExpireResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool SetExpireResponse::IsInitialized() const {
+  return true;
+}
+
+void SetExpireResponse::InternalSwap(SetExpireResponse* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(flag_, other->flag_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata SetExpireResponse::GetMetadata() const {
+  return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
+      &descriptor_table_kvserver_2eproto_getter, &descriptor_table_kvserver_2eproto_once,
+      file_level_metadata_kvserver_2eproto[0]);
+}
+
+// ===================================================================
+
+class ReqExpire::_Internal {
+ public:
+};
+
+ReqExpire::ReqExpire(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor();
+  if (!is_message_owned) {
+    RegisterArenaDtor(arena);
+  }
+  // @@protoc_insertion_point(arena_constructor:kv.ReqExpire)
+}
+ReqExpire::ReqExpire(const ReqExpire& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  key_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    key_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_key().empty()) {
+    key_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_key(), 
+      GetArenaForAllocation());
+  }
+  expires_ = from.expires_;
+  // @@protoc_insertion_point(copy_constructor:kv.ReqExpire)
+}
+
+inline void ReqExpire::SharedCtor() {
+key_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  key_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+expires_ = uint64_t{0u};
+}
+
+ReqExpire::~ReqExpire() {
+  // @@protoc_insertion_point(destructor:kv.ReqExpire)
+  if (GetArenaForAllocation() != nullptr) return;
+  SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+inline void ReqExpire::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  key_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+
+void ReqExpire::ArenaDtor(void* object) {
+  ReqExpire* _this = reinterpret_cast< ReqExpire* >(object);
+  (void)_this;
+}
+void ReqExpire::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
+void ReqExpire::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+
+void ReqExpire::Clear() {
+// @@protoc_insertion_point(message_clear_start:kv.ReqExpire)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  key_.ClearToEmpty();
+  expires_ = uint64_t{0u};
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ReqExpire::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string key = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_key();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "kv.ReqExpire.key"));
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint64 expires = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          expires_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ReqExpire::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:kv.ReqExpire)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string key = 1;
+  if (!this->_internal_key().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_key().data(), static_cast<int>(this->_internal_key().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "kv.ReqExpire.key");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_key(), target);
+  }
+
+  // uint64 expires = 2;
+  if (this->_internal_expires() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(2, this->_internal_expires(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:kv.ReqExpire)
+  return target;
+}
+
+size_t ReqExpire::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:kv.ReqExpire)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string key = 1;
+  if (!this->_internal_key().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_key());
+  }
+
+  // uint64 expires = 2;
+  if (this->_internal_expires() != 0) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64SizePlusOne(this->_internal_expires());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ReqExpire::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSizeCheck,
+    ReqExpire::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ReqExpire::GetClassData() const { return &_class_data_; }
+
+void ReqExpire::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to,
+                      const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+  static_cast<ReqExpire *>(to)->MergeFrom(
+      static_cast<const ReqExpire &>(from));
+}
+
+
+void ReqExpire::MergeFrom(const ReqExpire& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:kv.ReqExpire)
+  GOOGLE_DCHECK_NE(&from, this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_key().empty()) {
+    _internal_set_key(from._internal_key());
+  }
+  if (from._internal_expires() != 0) {
+    _internal_set_expires(from._internal_expires());
+  }
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ReqExpire::CopyFrom(const ReqExpire& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:kv.ReqExpire)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ReqExpire::IsInitialized() const {
+  return true;
+}
+
+void ReqExpire::InternalSwap(ReqExpire* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      &key_, lhs_arena,
+      &other->key_, rhs_arena
+  );
+  swap(expires_, other->expires_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ReqExpire::GetMetadata() const {
+  return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
+      &descriptor_table_kvserver_2eproto_getter, &descriptor_table_kvserver_2eproto_once,
+      file_level_metadata_kvserver_2eproto[1]);
+}
 
 // ===================================================================
 
@@ -442,7 +896,7 @@ void ReqKV::InternalSwap(ReqKV* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata ReqKV::GetMetadata() const {
   return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
       &descriptor_table_kvserver_2eproto_getter, &descriptor_table_kvserver_2eproto_once,
-      file_level_metadata_kvserver_2eproto[0]);
+      file_level_metadata_kvserver_2eproto[2]);
 }
 
 // ===================================================================
@@ -620,7 +1074,7 @@ void SetKVResponse::InternalSwap(SetKVResponse* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata SetKVResponse::GetMetadata() const {
   return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
       &descriptor_table_kvserver_2eproto_getter, &descriptor_table_kvserver_2eproto_once,
-      file_level_metadata_kvserver_2eproto[1]);
+      file_level_metadata_kvserver_2eproto[3]);
 }
 
 // ===================================================================
@@ -798,7 +1252,7 @@ void DelKVResponse::InternalSwap(DelKVResponse* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata DelKVResponse::GetMetadata() const {
   return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
       &descriptor_table_kvserver_2eproto_getter, &descriptor_table_kvserver_2eproto_once,
-      file_level_metadata_kvserver_2eproto[2]);
+      file_level_metadata_kvserver_2eproto[4]);
 }
 
 // ===================================================================
@@ -1001,7 +1455,7 @@ void ReqK::InternalSwap(ReqK* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata ReqK::GetMetadata() const {
   return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
       &descriptor_table_kvserver_2eproto_getter, &descriptor_table_kvserver_2eproto_once,
-      file_level_metadata_kvserver_2eproto[3]);
+      file_level_metadata_kvserver_2eproto[5]);
 }
 
 // ===================================================================
@@ -1217,12 +1671,18 @@ void GetKResponse::InternalSwap(GetKResponse* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata GetKResponse::GetMetadata() const {
   return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
       &descriptor_table_kvserver_2eproto_getter, &descriptor_table_kvserver_2eproto_once,
-      file_level_metadata_kvserver_2eproto[4]);
+      file_level_metadata_kvserver_2eproto[6]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace kv
 PROTOBUF_NAMESPACE_OPEN
+template<> PROTOBUF_NOINLINE ::kv::SetExpireResponse* Arena::CreateMaybeMessage< ::kv::SetExpireResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::kv::SetExpireResponse >(arena);
+}
+template<> PROTOBUF_NOINLINE ::kv::ReqExpire* Arena::CreateMaybeMessage< ::kv::ReqExpire >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::kv::ReqExpire >(arena);
+}
 template<> PROTOBUF_NOINLINE ::kv::ReqKV* Arena::CreateMaybeMessage< ::kv::ReqKV >(Arena* arena) {
   return Arena::CreateMessageInternal< ::kv::ReqKV >(arena);
 }

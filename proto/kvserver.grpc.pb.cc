@@ -25,6 +25,7 @@ static const char* KVServer_method_names[] = {
   "/kv.KVServer/SetKV",
   "/kv.KVServer/GetKV",
   "/kv.KVServer/DelKV",
+  "/kv.KVServer/SetExpire",
 };
 
 std::unique_ptr< KVServer::Stub> KVServer::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -37,6 +38,7 @@ KVServer::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, 
   : channel_(channel), rpcmethod_SetKV_(KVServer_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetKV_(KVServer_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_DelKV_(KVServer_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_SetExpire_(KVServer_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status KVServer::Stub::SetKV(::grpc::ClientContext* context, const ::kv::ReqKV& request, ::kv::SetKVResponse* response) {
@@ -108,6 +110,29 @@ void KVServer::Stub::async::DelKV(::grpc::ClientContext* context, const ::kv::Re
   return result;
 }
 
+::grpc::Status KVServer::Stub::SetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::kv::SetExpireResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::kv::ReqExpire, ::kv::SetExpireResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_SetExpire_, context, request, response);
+}
+
+void KVServer::Stub::async::SetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::kv::ReqExpire, ::kv::SetExpireResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SetExpire_, context, request, response, std::move(f));
+}
+
+void KVServer::Stub::async::SetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SetExpire_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::kv::SetExpireResponse>* KVServer::Stub::PrepareAsyncSetExpireRaw(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::kv::SetExpireResponse, ::kv::ReqExpire, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_SetExpire_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::kv::SetExpireResponse>* KVServer::Stub::AsyncSetExpireRaw(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncSetExpireRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 KVServer::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       KVServer_method_names[0],
@@ -139,6 +164,16 @@ KVServer::Service::Service() {
              ::kv::DelKVResponse* resp) {
                return service->DelKV(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      KVServer_method_names[3],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< KVServer::Service, ::kv::ReqExpire, ::kv::SetExpireResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](KVServer::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::kv::ReqExpire* req,
+             ::kv::SetExpireResponse* resp) {
+               return service->SetExpire(ctx, req, resp);
+             }, this)));
 }
 
 KVServer::Service::~Service() {
@@ -159,6 +194,13 @@ KVServer::Service::~Service() {
 }
 
 ::grpc::Status KVServer::Service::DelKV(::grpc::ServerContext* context, const ::kv::ReqK* request, ::kv::DelKVResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status KVServer::Service::SetExpire(::grpc::ServerContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response) {
   (void) context;
   (void) request;
   (void) response;

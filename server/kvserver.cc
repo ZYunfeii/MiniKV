@@ -38,7 +38,7 @@ void KVServer::serviceCallbackSet() {
 
     kvService_->setDelCallback([this](grpc::ServerContext* context, const kv::ReqK* req, kv::DelKVResponse* res)->grpc::Status{
         std::string key = req->key();
-        std::shared_lock<std::shared_mutex> lk(smutex_);
+        std::unique_lock<std::shared_mutex> lk(smutex_);
         int flag = db_->del(key);
         lk.unlock();
         if (flag == MiniKV_DEL_FAIL) {
@@ -48,6 +48,17 @@ void KVServer::serviceCallbackSet() {
         }
         return grpc::Status::OK;
     });
+
+    kvService_->setExpireCallback([this](grpc::ServerContext* context, const kv::ReqExpire* req, kv::SetExpireResponse* res)->grpc::Status{
+        std::string key = req->key();
+        uint64_t expires = req->expires();
+        // TODO: use another lock to lock the expire hash table
+        std::unique_lock<std::shared_mutex> lk(smutex_);
+        int flag = db_->setExpire(key, expires);
+        lk.unlock();
+        res->set_flag(flag);
+        return grpc::Status::OK;
+    });
 }
 
 void KVServer::serve() {
@@ -55,8 +66,12 @@ void KVServer::serve() {
     std::string serverAddr = ip_ + ":" + std::to_string(port_);
     builder.AddListeningPort(serverAddr, grpc::InsecureServerCredentials());
     builder.RegisterService(kvService_.get());
-    std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
+    server_ = std::unique_ptr<grpc::Server>(builder.BuildAndStart());
     fprintf(stdout, "Server listening on:%s", serverAddr.data());
     fflush(stdout);
-    server->Wait();
+    server_->Wait();
+}
+
+void KVServer::gracefullyStop() {
+    server_->Shutdown();
 }

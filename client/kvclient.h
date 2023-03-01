@@ -17,6 +17,7 @@ public:
 
     int setKV(std::string key, std::string val, uint32_t encoding);
     int delK(std::string key);
+    int setExpires(std::string key, uint64_t millisecond);
     GetRes getK(std::string key);
 private:
     std::unique_ptr<kv::KVServer::Stub> stub_;

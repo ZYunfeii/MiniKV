@@ -7,6 +7,16 @@ service KVServer {
     rpc SetKV(ReqKV) returns (SetKVResponse) {}
     rpc GetKV(ReqK) returns (GetKResponse) {}
     rpc DelKV(ReqK) returns (DelKVResponse) {}
+    rpc SetExpire(ReqExpire) returns (SetExpireResponse) {}
+}
+
+message SetExpireResponse {
+    bool flag = 1;
+}
+
+message ReqExpire {
+    string key = 1;
+    uint64 expires = 2;
 }
 
 message ReqKV {

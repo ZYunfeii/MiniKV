@@ -22,13 +22,19 @@ private:
         grpc::Status status = delCallback_(context, req, res);
         return status;
     }
+    grpc::Status SetExpire(grpc::ServerContext* context, const kv::ReqExpire* req, kv::SetExpireResponse* res) override {
+        grpc::Status status = expireCallback_(context, req, res);
+        return status;
+    }
 public:
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqKV* req, kv::SetKVResponse* res)> setCallback;
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqK* req, kv::GetKResponse* res)> getCallback;
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqK* req, kv::DelKVResponse* res)> delCallback;
+    typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqExpire* req, kv::SetExpireResponse* res)> expireCallback;
     setCallback setCallback_;
     getCallback getCallback_;
     delCallback delCallback_;
+    expireCallback expireCallback_;
     void setSetKVCallback(setCallback cb) {
         setCallback_ = cb;
     }
@@ -37,6 +43,9 @@ public:
     }
     void setDelCallback(delCallback cb) {
         delCallback_ = cb;
+    }
+    void setExpireCallback(expireCallback cb) {
+        expireCallback_ = cb;
     }
 };
 
@@ -47,10 +56,12 @@ private:
     std::string ip_;
     uint32_t port_;
     std::unique_ptr<KVService> kvService_;
+    std::unique_ptr<grpc::Server> server_;
     void serviceCallbackSet();
 public:
     KVServer(std::string ip, uint32_t port);
     void serve();
+    void gracefullyStop();
 };
 
 #endif

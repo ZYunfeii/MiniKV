@@ -56,6 +56,13 @@ class KVServer final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::DelKVResponse>> PrepareAsyncDelKV(::grpc::ClientContext* context, const ::kv::ReqK& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::DelKVResponse>>(PrepareAsyncDelKVRaw(context, request, cq));
     }
+    virtual ::grpc::Status SetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::kv::SetExpireResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::SetExpireResponse>> AsyncSetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::SetExpireResponse>>(AsyncSetExpireRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::SetExpireResponse>> PrepareAsyncSetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::SetExpireResponse>>(PrepareAsyncSetExpireRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -65,6 +72,8 @@ class KVServer final {
       virtual void GetKV(::grpc::ClientContext* context, const ::kv::ReqK* request, ::kv::GetKResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void DelKV(::grpc::ClientContext* context, const ::kv::ReqK* request, ::kv::DelKVResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void DelKV(::grpc::ClientContext* context, const ::kv::ReqK* request, ::kv::DelKVResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void SetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -76,6 +85,8 @@ class KVServer final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::GetKResponse>* PrepareAsyncGetKVRaw(::grpc::ClientContext* context, const ::kv::ReqK& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::DelKVResponse>* AsyncDelKVRaw(::grpc::ClientContext* context, const ::kv::ReqK& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::DelKVResponse>* PrepareAsyncDelKVRaw(::grpc::ClientContext* context, const ::kv::ReqK& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::SetExpireResponse>* AsyncSetExpireRaw(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::SetExpireResponse>* PrepareAsyncSetExpireRaw(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -101,6 +112,13 @@ class KVServer final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::DelKVResponse>> PrepareAsyncDelKV(::grpc::ClientContext* context, const ::kv::ReqK& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::DelKVResponse>>(PrepareAsyncDelKVRaw(context, request, cq));
     }
+    ::grpc::Status SetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::kv::SetExpireResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::SetExpireResponse>> AsyncSetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::SetExpireResponse>>(AsyncSetExpireRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::SetExpireResponse>> PrepareAsyncSetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::SetExpireResponse>>(PrepareAsyncSetExpireRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -110,6 +128,8 @@ class KVServer final {
       void GetKV(::grpc::ClientContext* context, const ::kv::ReqK* request, ::kv::GetKResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
       void DelKV(::grpc::ClientContext* context, const ::kv::ReqK* request, ::kv::DelKVResponse* response, std::function<void(::grpc::Status)>) override;
       void DelKV(::grpc::ClientContext* context, const ::kv::ReqK* request, ::kv::DelKVResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void SetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response, std::function<void(::grpc::Status)>) override;
+      void SetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -127,9 +147,12 @@ class KVServer final {
     ::grpc::ClientAsyncResponseReader< ::kv::GetKResponse>* PrepareAsyncGetKVRaw(::grpc::ClientContext* context, const ::kv::ReqK& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::kv::DelKVResponse>* AsyncDelKVRaw(::grpc::ClientContext* context, const ::kv::ReqK& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::kv::DelKVResponse>* PrepareAsyncDelKVRaw(::grpc::ClientContext* context, const ::kv::ReqK& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::kv::SetExpireResponse>* AsyncSetExpireRaw(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::kv::SetExpireResponse>* PrepareAsyncSetExpireRaw(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_SetKV_;
     const ::grpc::internal::RpcMethod rpcmethod_GetKV_;
     const ::grpc::internal::RpcMethod rpcmethod_DelKV_;
+    const ::grpc::internal::RpcMethod rpcmethod_SetExpire_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -140,6 +163,7 @@ class KVServer final {
     virtual ::grpc::Status SetKV(::grpc::ServerContext* context, const ::kv::ReqKV* request, ::kv::SetKVResponse* response);
     virtual ::grpc::Status GetKV(::grpc::ServerContext* context, const ::kv::ReqK* request, ::kv::GetKResponse* response);
     virtual ::grpc::Status DelKV(::grpc::ServerContext* context, const ::kv::ReqK* request, ::kv::DelKVResponse* response);
+    virtual ::grpc::Status SetExpire(::grpc::ServerContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_SetKV : public BaseClass {
@@ -201,7 +225,27 @@ class KVServer final {
       ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_SetKV<WithAsyncMethod_GetKV<WithAsyncMethod_DelKV<Service > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_SetExpire : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_SetExpire() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_SetExpire() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetExpire(::grpc::ServerContext* /*context*/, const ::kv::ReqExpire* /*request*/, ::kv::SetExpireResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSetExpire(::grpc::ServerContext* context, ::kv::ReqExpire* request, ::grpc::ServerAsyncResponseWriter< ::kv::SetExpireResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_SetKV<WithAsyncMethod_GetKV<WithAsyncMethod_DelKV<WithAsyncMethod_SetExpire<Service > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_SetKV : public BaseClass {
    private:
@@ -283,7 +327,34 @@ class KVServer final {
     virtual ::grpc::ServerUnaryReactor* DelKV(
       ::grpc::CallbackServerContext* /*context*/, const ::kv::ReqK* /*request*/, ::kv::DelKVResponse* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_SetKV<WithCallbackMethod_GetKV<WithCallbackMethod_DelKV<Service > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_SetExpire : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_SetExpire() {
+      ::grpc::Service::MarkMethodCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::kv::ReqExpire, ::kv::SetExpireResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response) { return this->SetExpire(context, request, response); }));}
+    void SetMessageAllocatorFor_SetExpire(
+        ::grpc::MessageAllocator< ::kv::ReqExpire, ::kv::SetExpireResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::kv::ReqExpire, ::kv::SetExpireResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_SetExpire() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetExpire(::grpc::ServerContext* /*context*/, const ::kv::ReqExpire* /*request*/, ::kv::SetExpireResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* SetExpire(
+      ::grpc::CallbackServerContext* /*context*/, const ::kv::ReqExpire* /*request*/, ::kv::SetExpireResponse* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_SetKV<WithCallbackMethod_GetKV<WithCallbackMethod_DelKV<WithCallbackMethod_SetExpire<Service > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_SetKV : public BaseClass {
@@ -332,6 +403,23 @@ class KVServer final {
     }
     // disable synchronous version of this method
     ::grpc::Status DelKV(::grpc::ServerContext* /*context*/, const ::kv::ReqK* /*request*/, ::kv::DelKVResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_SetExpire : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_SetExpire() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_SetExpire() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetExpire(::grpc::ServerContext* /*context*/, const ::kv::ReqExpire* /*request*/, ::kv::SetExpireResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -394,6 +482,26 @@ class KVServer final {
     }
     void RequestDelKV(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_SetExpire : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_SetExpire() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_SetExpire() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetExpire(::grpc::ServerContext* /*context*/, const ::kv::ReqExpire* /*request*/, ::kv::SetExpireResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSetExpire(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -460,6 +568,28 @@ class KVServer final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* DelKV(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_SetExpire : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_SetExpire() {
+      ::grpc::Service::MarkMethodRawCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SetExpire(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_SetExpire() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetExpire(::grpc::ServerContext* /*context*/, const ::kv::ReqExpire* /*request*/, ::kv::SetExpireResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* SetExpire(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -543,9 +673,36 @@ class KVServer final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedDelKV(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::kv::ReqK,::kv::DelKVResponse>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_SetKV<WithStreamedUnaryMethod_GetKV<WithStreamedUnaryMethod_DelKV<Service > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_SetExpire : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_SetExpire() {
+      ::grpc::Service::MarkMethodStreamed(3,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::kv::ReqExpire, ::kv::SetExpireResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::kv::ReqExpire, ::kv::SetExpireResponse>* streamer) {
+                       return this->StreamedSetExpire(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_SetExpire() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status SetExpire(::grpc::ServerContext* /*context*/, const ::kv::ReqExpire* /*request*/, ::kv::SetExpireResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedSetExpire(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::kv::ReqExpire,::kv::SetExpireResponse>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_SetKV<WithStreamedUnaryMethod_GetKV<WithStreamedUnaryMethod_DelKV<WithStreamedUnaryMethod_SetExpire<Service > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_SetKV<WithStreamedUnaryMethod_GetKV<WithStreamedUnaryMethod_DelKV<Service > > > StreamedService;
+  typedef WithStreamedUnaryMethod_SetKV<WithStreamedUnaryMethod_GetKV<WithStreamedUnaryMethod_DelKV<WithStreamedUnaryMethod_SetExpire<Service > > > > StreamedService;
 };
 
 }  // namespace kv
