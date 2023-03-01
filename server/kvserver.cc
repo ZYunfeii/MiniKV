@@ -35,6 +35,19 @@ void KVServer::serviceCallbackSet() {
         }
         return grpc::Status::OK;
     });
+
+    kvService_->setDelCallback([this](grpc::ServerContext* context, const kv::ReqK* req, kv::DelKVResponse* res)->grpc::Status{
+        std::string key = req->key();
+        std::shared_lock<std::shared_mutex> lk(smutex_);
+        int flag = db_->del(key);
+        lk.unlock();
+        if (flag == MiniKV_DEL_FAIL) {
+            res->set_flag(false);
+        } else {
+            res->set_flag(true);
+        }
+        return grpc::Status::OK;
+    });
 }
 
 void KVServer::serve() {

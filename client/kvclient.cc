@@ -21,6 +21,19 @@ int KVClient::setKV(std::string key, std::string val, uint32_t encoding) {
     return MiniKV_SET_SUCCESS;
 }
 
+int KVClient::delK(std::string key) {
+    kv::ReqK req;
+    kv::DelKVResponse res;
+    req.set_key(key);
+    grpc::ClientContext context;
+    grpc::Status status = stub_->DelKV(&context, req, &res);
+    if (!status.ok() || res.flag() == false) {
+        // TODO: log
+        return MiniKV_DEL_FAIL;
+    }
+    return MiniKV_DEL_SUCCESS;
+}
+
 GetRes KVClient::getK(std::string key) {
     GetRes ans;
     kv::ReqK req;

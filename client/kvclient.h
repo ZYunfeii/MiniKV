@@ -16,6 +16,7 @@ public:
     KVClient(std::string ip, uint32_t port);
 
     int setKV(std::string key, std::string val, uint32_t encoding);
+    int delK(std::string key);
     GetRes getK(std::string key);
 private:
     std::unique_ptr<kv::KVServer::Stub> stub_;

@@ -18,16 +18,25 @@ private:
         grpc::Status status = getCallback_(context, req, res);
         return status;
     }
+    grpc::Status DelKV(grpc::ServerContext* context, const kv::ReqK* req, kv::DelKVResponse* res) override {
+        grpc::Status status = delCallback_(context, req, res);
+        return status;
+    }
 public:
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqKV* req, kv::SetKVResponse* res)> setCallback;
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqK* req, kv::GetKResponse* res)> getCallback;
+    typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqK* req, kv::DelKVResponse* res)> delCallback;
     setCallback setCallback_;
     getCallback getCallback_;
+    delCallback delCallback_;
     void setSetKVCallback(setCallback cb) {
         setCallback_ = cb;
     }
     void setGetKCallback(getCallback cb) {
         getCallback_ = cb;
+    }
+    void setDelCallback(delCallback cb) {
+        delCallback_ = cb;
     }
 };
 

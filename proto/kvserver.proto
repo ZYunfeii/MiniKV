@@ -1,10 +1,12 @@
 syntax = "proto3";
-
+// protoc --grpc_out=. --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` kvserver.proto
+// protoc --cpp_out=. kvserver.proto
 package kv;
 
 service KVServer {
     rpc SetKV(ReqKV) returns (SetKVResponse) {}
     rpc GetKV(ReqK) returns (GetKResponse) {}
+    rpc DelKV(ReqK) returns (DelKVResponse) {}
 }
 
 message ReqKV {
@@ -14,6 +16,10 @@ message ReqKV {
 }
 
 message SetKVResponse {
+    bool flag = 1;
+}
+
+message DelKVResponse {
     bool flag = 1;
 }
 

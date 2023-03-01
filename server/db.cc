@@ -30,6 +30,10 @@ void MiniKVDB::get(std::string key, std::vector<std::string>& res) {
     hash1_->get(key, res);
 }
 
+int MiniKVDB::del(std::string key) {
+    return hash1_->del(key);
+}
+
 void MiniKVDB::rdbSave() {
     std::unique_lock<std::shared_mutex> lk(smutex_);
     kvlogi("rdb save triggered!");

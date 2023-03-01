@@ -24,6 +24,7 @@ namespace kv {
 static const char* KVServer_method_names[] = {
   "/kv.KVServer/SetKV",
   "/kv.KVServer/GetKV",
+  "/kv.KVServer/DelKV",
 };
 
 std::unique_ptr< KVServer::Stub> KVServer::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -35,6 +36,7 @@ std::unique_ptr< KVServer::Stub> KVServer::NewStub(const std::shared_ptr< ::grpc
 KVServer::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_SetKV_(KVServer_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetKV_(KVServer_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_DelKV_(KVServer_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status KVServer::Stub::SetKV(::grpc::ClientContext* context, const ::kv::ReqKV& request, ::kv::SetKVResponse* response) {
@@ -83,6 +85,29 @@ void KVServer::Stub::async::GetKV(::grpc::ClientContext* context, const ::kv::Re
   return result;
 }
 
+::grpc::Status KVServer::Stub::DelKV(::grpc::ClientContext* context, const ::kv::ReqK& request, ::kv::DelKVResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::kv::ReqK, ::kv::DelKVResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_DelKV_, context, request, response);
+}
+
+void KVServer::Stub::async::DelKV(::grpc::ClientContext* context, const ::kv::ReqK* request, ::kv::DelKVResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::kv::ReqK, ::kv::DelKVResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DelKV_, context, request, response, std::move(f));
+}
+
+void KVServer::Stub::async::DelKV(::grpc::ClientContext* context, const ::kv::ReqK* request, ::kv::DelKVResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DelKV_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::kv::DelKVResponse>* KVServer::Stub::PrepareAsyncDelKVRaw(::grpc::ClientContext* context, const ::kv::ReqK& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::kv::DelKVResponse, ::kv::ReqK, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_DelKV_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::kv::DelKVResponse>* KVServer::Stub::AsyncDelKVRaw(::grpc::ClientContext* context, const ::kv::ReqK& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncDelKVRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 KVServer::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       KVServer_method_names[0],
@@ -104,6 +129,16 @@ KVServer::Service::Service() {
              ::kv::GetKResponse* resp) {
                return service->GetKV(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      KVServer_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< KVServer::Service, ::kv::ReqK, ::kv::DelKVResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](KVServer::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::kv::ReqK* req,
+             ::kv::DelKVResponse* resp) {
+               return service->DelKV(ctx, req, resp);
+             }, this)));
 }
 
 KVServer::Service::~Service() {
@@ -117,6 +152,13 @@ KVServer::Service::~Service() {
 }
 
 ::grpc::Status KVServer::Service::GetKV(::grpc::ServerContext* context, const ::kv::ReqK* request, ::kv::GetKResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status KVServer::Service::DelKV(::grpc::ServerContext* context, const ::kv::ReqK* request, ::kv::DelKVResponse* response) {
   (void) context;
   (void) request;
   (void) response;

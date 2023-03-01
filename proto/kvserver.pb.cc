@@ -43,6 +43,18 @@ struct SetKVResponseDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT SetKVResponseDefaultTypeInternal _SetKVResponse_default_instance_;
+constexpr DelKVResponse::DelKVResponse(
+  ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
+  : flag_(false){}
+struct DelKVResponseDefaultTypeInternal {
+  constexpr DelKVResponseDefaultTypeInternal()
+    : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
+  ~DelKVResponseDefaultTypeInternal() {}
+  union {
+    DelKVResponse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT DelKVResponseDefaultTypeInternal _DelKVResponse_default_instance_;
 constexpr ReqK::ReqK(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : key_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string){}
@@ -69,7 +81,7 @@ struct GetKResponseDefaultTypeInternal {
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT GetKResponseDefaultTypeInternal _GetKResponse_default_instance_;
 }  // namespace kv
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_kvserver_2eproto[4];
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_kvserver_2eproto[5];
 static constexpr ::PROTOBUF_NAMESPACE_ID::EnumDescriptor const** file_level_enum_descriptors_kvserver_2eproto = nullptr;
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_kvserver_2eproto = nullptr;
 
@@ -91,6 +103,13 @@ const uint32_t TableStruct_kvserver_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::kv::SetKVResponse, flag_),
   ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::kv::DelKVResponse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::kv::DelKVResponse, flag_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::kv::ReqK, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -109,13 +128,15 @@ const uint32_t TableStruct_kvserver_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::kv::ReqKV)},
   { 9, -1, -1, sizeof(::kv::SetKVResponse)},
-  { 16, -1, -1, sizeof(::kv::ReqK)},
-  { 23, -1, -1, sizeof(::kv::GetKResponse)},
+  { 16, -1, -1, sizeof(::kv::DelKVResponse)},
+  { 23, -1, -1, sizeof(::kv::ReqK)},
+  { 30, -1, -1, sizeof(::kv::GetKResponse)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::kv::_ReqKV_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::kv::_SetKVResponse_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::kv::_DelKVResponse_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::kv::_ReqK_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::kv::_GetKResponse_default_instance_),
 };
@@ -123,16 +144,18 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 const char descriptor_table_protodef_kvserver_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\016kvserver.proto\022\002kv\"3\n\005ReqKV\022\020\n\010encodin"
   "g\030\001 \001(\r\022\013\n\003key\030\002 \001(\t\022\013\n\003val\030\003 \001(\t\"\035\n\rSet"
-  "KVResponse\022\014\n\004flag\030\001 \001(\010\"\023\n\004ReqK\022\013\n\003key\030"
-  "\001 \001(\t\")\n\014GetKResponse\022\014\n\004flag\030\001 \001(\010\022\013\n\003v"
-  "al\030\002 \003(\t2Z\n\010KVServer\022\'\n\005SetKV\022\t.kv.ReqKV"
-  "\032\021.kv.SetKVResponse\"\000\022%\n\005GetKV\022\010.kv.ReqK"
-  "\032\020.kv.GetKResponse\"\000b\006proto3"
+  "KVResponse\022\014\n\004flag\030\001 \001(\010\"\035\n\rDelKVRespons"
+  "e\022\014\n\004flag\030\001 \001(\010\"\023\n\004ReqK\022\013\n\003key\030\001 \001(\t\")\n\014"
+  "GetKResponse\022\014\n\004flag\030\001 \001(\010\022\013\n\003val\030\002 \003(\t2"
+  "\202\001\n\010KVServer\022\'\n\005SetKV\022\t.kv.ReqKV\032\021.kv.Se"
+  "tKVResponse\"\000\022%\n\005GetKV\022\010.kv.ReqK\032\020.kv.Ge"
+  "tKResponse\"\000\022&\n\005DelKV\022\010.kv.ReqK\032\021.kv.Del"
+  "KVResponse\"\000b\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_kvserver_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_kvserver_2eproto = {
-  false, false, 268, descriptor_table_protodef_kvserver_2eproto, "kvserver.proto", 
-  &descriptor_table_kvserver_2eproto_once, nullptr, 0, 4,
+  false, false, 340, descriptor_table_protodef_kvserver_2eproto, "kvserver.proto", 
+  &descriptor_table_kvserver_2eproto_once, nullptr, 0, 5,
   schemas, file_default_instances, TableStruct_kvserver_2eproto::offsets,
   file_level_metadata_kvserver_2eproto, file_level_enum_descriptors_kvserver_2eproto, file_level_service_descriptors_kvserver_2eproto,
 };
@@ -602,6 +625,184 @@ void SetKVResponse::InternalSwap(SetKVResponse* other) {
 
 // ===================================================================
 
+class DelKVResponse::_Internal {
+ public:
+};
+
+DelKVResponse::DelKVResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor();
+  if (!is_message_owned) {
+    RegisterArenaDtor(arena);
+  }
+  // @@protoc_insertion_point(arena_constructor:kv.DelKVResponse)
+}
+DelKVResponse::DelKVResponse(const DelKVResponse& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  flag_ = from.flag_;
+  // @@protoc_insertion_point(copy_constructor:kv.DelKVResponse)
+}
+
+inline void DelKVResponse::SharedCtor() {
+flag_ = false;
+}
+
+DelKVResponse::~DelKVResponse() {
+  // @@protoc_insertion_point(destructor:kv.DelKVResponse)
+  if (GetArenaForAllocation() != nullptr) return;
+  SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+inline void DelKVResponse::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void DelKVResponse::ArenaDtor(void* object) {
+  DelKVResponse* _this = reinterpret_cast< DelKVResponse* >(object);
+  (void)_this;
+}
+void DelKVResponse::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
+void DelKVResponse::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+
+void DelKVResponse::Clear() {
+// @@protoc_insertion_point(message_clear_start:kv.DelKVResponse)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  flag_ = false;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* DelKVResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // bool flag = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          flag_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* DelKVResponse::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:kv.DelKVResponse)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // bool flag = 1;
+  if (this->_internal_flag() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(1, this->_internal_flag(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:kv.DelKVResponse)
+  return target;
+}
+
+size_t DelKVResponse::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:kv.DelKVResponse)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // bool flag = 1;
+  if (this->_internal_flag() != 0) {
+    total_size += 1 + 1;
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData DelKVResponse::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSizeCheck,
+    DelKVResponse::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*DelKVResponse::GetClassData() const { return &_class_data_; }
+
+void DelKVResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to,
+                      const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+  static_cast<DelKVResponse *>(to)->MergeFrom(
+      static_cast<const DelKVResponse &>(from));
+}
+
+
+void DelKVResponse::MergeFrom(const DelKVResponse& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:kv.DelKVResponse)
+  GOOGLE_DCHECK_NE(&from, this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_flag() != 0) {
+    _internal_set_flag(from._internal_flag());
+  }
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void DelKVResponse::CopyFrom(const DelKVResponse& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:kv.DelKVResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool DelKVResponse::IsInitialized() const {
+  return true;
+}
+
+void DelKVResponse::InternalSwap(DelKVResponse* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(flag_, other->flag_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata DelKVResponse::GetMetadata() const {
+  return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
+      &descriptor_table_kvserver_2eproto_getter, &descriptor_table_kvserver_2eproto_once,
+      file_level_metadata_kvserver_2eproto[2]);
+}
+
+// ===================================================================
+
 class ReqK::_Internal {
  public:
 };
@@ -800,7 +1001,7 @@ void ReqK::InternalSwap(ReqK* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata ReqK::GetMetadata() const {
   return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
       &descriptor_table_kvserver_2eproto_getter, &descriptor_table_kvserver_2eproto_once,
-      file_level_metadata_kvserver_2eproto[2]);
+      file_level_metadata_kvserver_2eproto[3]);
 }
 
 // ===================================================================
@@ -1016,7 +1217,7 @@ void GetKResponse::InternalSwap(GetKResponse* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata GetKResponse::GetMetadata() const {
   return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
       &descriptor_table_kvserver_2eproto_getter, &descriptor_table_kvserver_2eproto_once,
-      file_level_metadata_kvserver_2eproto[3]);
+      file_level_metadata_kvserver_2eproto[4]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -1027,6 +1228,9 @@ template<> PROTOBUF_NOINLINE ::kv::ReqKV* Arena::CreateMaybeMessage< ::kv::ReqKV
 }
 template<> PROTOBUF_NOINLINE ::kv::SetKVResponse* Arena::CreateMaybeMessage< ::kv::SetKVResponse >(Arena* arena) {
   return Arena::CreateMessageInternal< ::kv::SetKVResponse >(arena);
+}
+template<> PROTOBUF_NOINLINE ::kv::DelKVResponse* Arena::CreateMaybeMessage< ::kv::DelKVResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::kv::DelKVResponse >(arena);
 }
 template<> PROTOBUF_NOINLINE ::kv::ReqK* Arena::CreateMaybeMessage< ::kv::ReqK >(Arena* arena) {
   return Arena::CreateMessageInternal< ::kv::ReqK >(arena);

@@ -46,7 +46,7 @@ struct TableStruct_kvserver_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[4]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[5]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -54,6 +54,9 @@ struct TableStruct_kvserver_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_kvserver_2eproto;
 namespace kv {
+class DelKVResponse;
+struct DelKVResponseDefaultTypeInternal;
+extern DelKVResponseDefaultTypeInternal _DelKVResponse_default_instance_;
 class GetKResponse;
 struct GetKResponseDefaultTypeInternal;
 extern GetKResponseDefaultTypeInternal _GetKResponse_default_instance_;
@@ -68,6 +71,7 @@ struct SetKVResponseDefaultTypeInternal;
 extern SetKVResponseDefaultTypeInternal _SetKVResponse_default_instance_;
 }  // namespace kv
 PROTOBUF_NAMESPACE_OPEN
+template<> ::kv::DelKVResponse* Arena::CreateMaybeMessage<::kv::DelKVResponse>(Arena*);
 template<> ::kv::GetKResponse* Arena::CreateMaybeMessage<::kv::GetKResponse>(Arena*);
 template<> ::kv::ReqK* Arena::CreateMaybeMessage<::kv::ReqK>(Arena*);
 template<> ::kv::ReqKV* Arena::CreateMaybeMessage<::kv::ReqKV>(Arena*);
@@ -401,6 +405,152 @@ class SetKVResponse final :
 };
 // -------------------------------------------------------------------
 
+class DelKVResponse final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:kv.DelKVResponse) */ {
+ public:
+  inline DelKVResponse() : DelKVResponse(nullptr) {}
+  ~DelKVResponse() override;
+  explicit constexpr DelKVResponse(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  DelKVResponse(const DelKVResponse& from);
+  DelKVResponse(DelKVResponse&& from) noexcept
+    : DelKVResponse() {
+    *this = ::std::move(from);
+  }
+
+  inline DelKVResponse& operator=(const DelKVResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline DelKVResponse& operator=(DelKVResponse&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const DelKVResponse& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const DelKVResponse* internal_default_instance() {
+    return reinterpret_cast<const DelKVResponse*>(
+               &_DelKVResponse_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(DelKVResponse& a, DelKVResponse& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(DelKVResponse* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(DelKVResponse* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  DelKVResponse* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<DelKVResponse>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const DelKVResponse& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom(const DelKVResponse& from);
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(DelKVResponse* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "kv.DelKVResponse";
+  }
+  protected:
+  explicit DelKVResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kFlagFieldNumber = 1,
+  };
+  // bool flag = 1;
+  void clear_flag();
+  bool flag() const;
+  void set_flag(bool value);
+  private:
+  bool _internal_flag() const;
+  void _internal_set_flag(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:kv.DelKVResponse)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  bool flag_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_kvserver_2eproto;
+};
+// -------------------------------------------------------------------
+
 class ReqK final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:kv.ReqK) */ {
  public:
@@ -449,7 +599,7 @@ class ReqK final :
                &_ReqK_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    3;
 
   friend void swap(ReqK& a, ReqK& b) {
     a.Swap(&b);
@@ -600,7 +750,7 @@ class GetKResponse final :
                &_GetKResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    4;
 
   friend void swap(GetKResponse& a, GetKResponse& b) {
     a.Swap(&b);
@@ -881,6 +1031,30 @@ inline void SetKVResponse::set_flag(bool value) {
 
 // -------------------------------------------------------------------
 
+// DelKVResponse
+
+// bool flag = 1;
+inline void DelKVResponse::clear_flag() {
+  flag_ = false;
+}
+inline bool DelKVResponse::_internal_flag() const {
+  return flag_;
+}
+inline bool DelKVResponse::flag() const {
+  // @@protoc_insertion_point(field_get:kv.DelKVResponse.flag)
+  return _internal_flag();
+}
+inline void DelKVResponse::_internal_set_flag(bool value) {
+  
+  flag_ = value;
+}
+inline void DelKVResponse::set_flag(bool value) {
+  _internal_set_flag(value);
+  // @@protoc_insertion_point(field_set:kv.DelKVResponse.flag)
+}
+
+// -------------------------------------------------------------------
+
 // ReqK
 
 // string key = 1;
@@ -1036,6 +1210,8 @@ GetKResponse::mutable_val() {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

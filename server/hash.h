@@ -106,13 +106,15 @@ public:
             }
         }   
     }
-    void del(std::string key) {
+    int del(std::string key) {
         int slot = hash(key);
         std::for_each(hash_[slot].begin(), hash_[slot].end(), [&key, &slot, this](std::shared_ptr<Entry> p) {
             if (p.get()->key == key) {
                 hash_[slot].remove(p);
+                return MiniKV_DEL_SUCCESS;
             }
         });
+        return MiniKV_DEL_FAIL;
     }
 };
 
