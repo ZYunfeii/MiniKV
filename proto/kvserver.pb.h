@@ -46,7 +46,7 @@ struct TableStruct_kvserver_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[7]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[9]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -60,6 +60,9 @@ extern DelKVResponseDefaultTypeInternal _DelKVResponse_default_instance_;
 class GetKResponse;
 struct GetKResponseDefaultTypeInternal;
 extern GetKResponseDefaultTypeInternal _GetKResponse_default_instance_;
+class GetKeyNameResponse;
+struct GetKeyNameResponseDefaultTypeInternal;
+extern GetKeyNameResponseDefaultTypeInternal _GetKeyNameResponse_default_instance_;
 class ReqExpire;
 struct ReqExpireDefaultTypeInternal;
 extern ReqExpireDefaultTypeInternal _ReqExpire_default_instance_;
@@ -69,6 +72,9 @@ extern ReqKDefaultTypeInternal _ReqK_default_instance_;
 class ReqKV;
 struct ReqKVDefaultTypeInternal;
 extern ReqKVDefaultTypeInternal _ReqKV_default_instance_;
+class ReqKeyName;
+struct ReqKeyNameDefaultTypeInternal;
+extern ReqKeyNameDefaultTypeInternal _ReqKeyName_default_instance_;
 class SetExpireResponse;
 struct SetExpireResponseDefaultTypeInternal;
 extern SetExpireResponseDefaultTypeInternal _SetExpireResponse_default_instance_;
@@ -79,15 +85,329 @@ extern SetKVResponseDefaultTypeInternal _SetKVResponse_default_instance_;
 PROTOBUF_NAMESPACE_OPEN
 template<> ::kv::DelKVResponse* Arena::CreateMaybeMessage<::kv::DelKVResponse>(Arena*);
 template<> ::kv::GetKResponse* Arena::CreateMaybeMessage<::kv::GetKResponse>(Arena*);
+template<> ::kv::GetKeyNameResponse* Arena::CreateMaybeMessage<::kv::GetKeyNameResponse>(Arena*);
 template<> ::kv::ReqExpire* Arena::CreateMaybeMessage<::kv::ReqExpire>(Arena*);
 template<> ::kv::ReqK* Arena::CreateMaybeMessage<::kv::ReqK>(Arena*);
 template<> ::kv::ReqKV* Arena::CreateMaybeMessage<::kv::ReqKV>(Arena*);
+template<> ::kv::ReqKeyName* Arena::CreateMaybeMessage<::kv::ReqKeyName>(Arena*);
 template<> ::kv::SetExpireResponse* Arena::CreateMaybeMessage<::kv::SetExpireResponse>(Arena*);
 template<> ::kv::SetKVResponse* Arena::CreateMaybeMessage<::kv::SetKVResponse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace kv {
 
 // ===================================================================
+
+class GetKeyNameResponse final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:kv.GetKeyNameResponse) */ {
+ public:
+  inline GetKeyNameResponse() : GetKeyNameResponse(nullptr) {}
+  ~GetKeyNameResponse() override;
+  explicit constexpr GetKeyNameResponse(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  GetKeyNameResponse(const GetKeyNameResponse& from);
+  GetKeyNameResponse(GetKeyNameResponse&& from) noexcept
+    : GetKeyNameResponse() {
+    *this = ::std::move(from);
+  }
+
+  inline GetKeyNameResponse& operator=(const GetKeyNameResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline GetKeyNameResponse& operator=(GetKeyNameResponse&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const GetKeyNameResponse& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const GetKeyNameResponse* internal_default_instance() {
+    return reinterpret_cast<const GetKeyNameResponse*>(
+               &_GetKeyNameResponse_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    0;
+
+  friend void swap(GetKeyNameResponse& a, GetKeyNameResponse& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(GetKeyNameResponse* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(GetKeyNameResponse* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  GetKeyNameResponse* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<GetKeyNameResponse>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const GetKeyNameResponse& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom(const GetKeyNameResponse& from);
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(GetKeyNameResponse* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "kv.GetKeyNameResponse";
+  }
+  protected:
+  explicit GetKeyNameResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kValFieldNumber = 1,
+  };
+  // repeated string val = 1;
+  int val_size() const;
+  private:
+  int _internal_val_size() const;
+  public:
+  void clear_val();
+  const std::string& val(int index) const;
+  std::string* mutable_val(int index);
+  void set_val(int index, const std::string& value);
+  void set_val(int index, std::string&& value);
+  void set_val(int index, const char* value);
+  void set_val(int index, const char* value, size_t size);
+  std::string* add_val();
+  void add_val(const std::string& value);
+  void add_val(std::string&& value);
+  void add_val(const char* value);
+  void add_val(const char* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& val() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_val();
+  private:
+  const std::string& _internal_val(int index) const;
+  std::string* _internal_add_val();
+  public:
+
+  // @@protoc_insertion_point(class_scope:kv.GetKeyNameResponse)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> val_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_kvserver_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ReqKeyName final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:kv.ReqKeyName) */ {
+ public:
+  inline ReqKeyName() : ReqKeyName(nullptr) {}
+  ~ReqKeyName() override;
+  explicit constexpr ReqKeyName(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  ReqKeyName(const ReqKeyName& from);
+  ReqKeyName(ReqKeyName&& from) noexcept
+    : ReqKeyName() {
+    *this = ::std::move(from);
+  }
+
+  inline ReqKeyName& operator=(const ReqKeyName& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ReqKeyName& operator=(ReqKeyName&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ReqKeyName& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ReqKeyName* internal_default_instance() {
+    return reinterpret_cast<const ReqKeyName*>(
+               &_ReqKeyName_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  friend void swap(ReqKeyName& a, ReqKeyName& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ReqKeyName* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ReqKeyName* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ReqKeyName* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ReqKeyName>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ReqKeyName& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom(const ReqKeyName& from);
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ReqKeyName* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "kv.ReqKeyName";
+  }
+  protected:
+  explicit ReqKeyName(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kKeyRexFieldNumber = 1,
+  };
+  // string keyRex = 1;
+  void clear_keyrex();
+  const std::string& keyrex() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_keyrex(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_keyrex();
+  PROTOBUF_NODISCARD std::string* release_keyrex();
+  void set_allocated_keyrex(std::string* keyrex);
+  private:
+  const std::string& _internal_keyrex() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_keyrex(const std::string& value);
+  std::string* _internal_mutable_keyrex();
+  public:
+
+  // @@protoc_insertion_point(class_scope:kv.ReqKeyName)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr keyrex_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_kvserver_2eproto;
+};
+// -------------------------------------------------------------------
 
 class SetExpireResponse final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:kv.SetExpireResponse) */ {
@@ -137,7 +457,7 @@ class SetExpireResponse final :
                &_SetExpireResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    0;
+    2;
 
   friend void swap(SetExpireResponse& a, SetExpireResponse& b) {
     a.Swap(&b);
@@ -283,7 +603,7 @@ class ReqExpire final :
                &_ReqExpire_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    3;
 
   friend void swap(ReqExpire& a, ReqExpire& b) {
     a.Swap(&b);
@@ -445,7 +765,7 @@ class ReqKV final :
                &_ReqKV_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    4;
 
   friend void swap(ReqKV& a, ReqKV& b) {
     a.Swap(&b);
@@ -623,7 +943,7 @@ class SetKVResponse final :
                &_SetKVResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    5;
 
   friend void swap(SetKVResponse& a, SetKVResponse& b) {
     a.Swap(&b);
@@ -769,7 +1089,7 @@ class DelKVResponse final :
                &_DelKVResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    6;
 
   friend void swap(DelKVResponse& a, DelKVResponse& b) {
     a.Swap(&b);
@@ -915,7 +1235,7 @@ class ReqK final :
                &_ReqK_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    7;
 
   friend void swap(ReqK& a, ReqK& b) {
     a.Swap(&b);
@@ -1066,7 +1386,7 @@ class GetKResponse final :
                &_GetKResponse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    8;
 
   friend void swap(GetKResponse& a, GetKResponse& b) {
     a.Swap(&b);
@@ -1197,6 +1517,140 @@ class GetKResponse final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// GetKeyNameResponse
+
+// repeated string val = 1;
+inline int GetKeyNameResponse::_internal_val_size() const {
+  return val_.size();
+}
+inline int GetKeyNameResponse::val_size() const {
+  return _internal_val_size();
+}
+inline void GetKeyNameResponse::clear_val() {
+  val_.Clear();
+}
+inline std::string* GetKeyNameResponse::add_val() {
+  std::string* _s = _internal_add_val();
+  // @@protoc_insertion_point(field_add_mutable:kv.GetKeyNameResponse.val)
+  return _s;
+}
+inline const std::string& GetKeyNameResponse::_internal_val(int index) const {
+  return val_.Get(index);
+}
+inline const std::string& GetKeyNameResponse::val(int index) const {
+  // @@protoc_insertion_point(field_get:kv.GetKeyNameResponse.val)
+  return _internal_val(index);
+}
+inline std::string* GetKeyNameResponse::mutable_val(int index) {
+  // @@protoc_insertion_point(field_mutable:kv.GetKeyNameResponse.val)
+  return val_.Mutable(index);
+}
+inline void GetKeyNameResponse::set_val(int index, const std::string& value) {
+  val_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:kv.GetKeyNameResponse.val)
+}
+inline void GetKeyNameResponse::set_val(int index, std::string&& value) {
+  val_.Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:kv.GetKeyNameResponse.val)
+}
+inline void GetKeyNameResponse::set_val(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  val_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:kv.GetKeyNameResponse.val)
+}
+inline void GetKeyNameResponse::set_val(int index, const char* value, size_t size) {
+  val_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:kv.GetKeyNameResponse.val)
+}
+inline std::string* GetKeyNameResponse::_internal_add_val() {
+  return val_.Add();
+}
+inline void GetKeyNameResponse::add_val(const std::string& value) {
+  val_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:kv.GetKeyNameResponse.val)
+}
+inline void GetKeyNameResponse::add_val(std::string&& value) {
+  val_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:kv.GetKeyNameResponse.val)
+}
+inline void GetKeyNameResponse::add_val(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  val_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:kv.GetKeyNameResponse.val)
+}
+inline void GetKeyNameResponse::add_val(const char* value, size_t size) {
+  val_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:kv.GetKeyNameResponse.val)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+GetKeyNameResponse::val() const {
+  // @@protoc_insertion_point(field_list:kv.GetKeyNameResponse.val)
+  return val_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+GetKeyNameResponse::mutable_val() {
+  // @@protoc_insertion_point(field_mutable_list:kv.GetKeyNameResponse.val)
+  return &val_;
+}
+
+// -------------------------------------------------------------------
+
+// ReqKeyName
+
+// string keyRex = 1;
+inline void ReqKeyName::clear_keyrex() {
+  keyrex_.ClearToEmpty();
+}
+inline const std::string& ReqKeyName::keyrex() const {
+  // @@protoc_insertion_point(field_get:kv.ReqKeyName.keyRex)
+  return _internal_keyrex();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ReqKeyName::set_keyrex(ArgT0&& arg0, ArgT... args) {
+ 
+ keyrex_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:kv.ReqKeyName.keyRex)
+}
+inline std::string* ReqKeyName::mutable_keyrex() {
+  std::string* _s = _internal_mutable_keyrex();
+  // @@protoc_insertion_point(field_mutable:kv.ReqKeyName.keyRex)
+  return _s;
+}
+inline const std::string& ReqKeyName::_internal_keyrex() const {
+  return keyrex_.Get();
+}
+inline void ReqKeyName::_internal_set_keyrex(const std::string& value) {
+  
+  keyrex_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* ReqKeyName::_internal_mutable_keyrex() {
+  
+  return keyrex_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* ReqKeyName::release_keyrex() {
+  // @@protoc_insertion_point(field_release:kv.ReqKeyName.keyRex)
+  return keyrex_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void ReqKeyName::set_allocated_keyrex(std::string* keyrex) {
+  if (keyrex != nullptr) {
+    
+  } else {
+    
+  }
+  keyrex_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), keyrex,
+      GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (keyrex_.IsDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited())) {
+    keyrex_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:kv.ReqKeyName.keyRex)
+}
+
+// -------------------------------------------------------------------
+
 // SetExpireResponse
 
 // bool flag = 1;
@@ -1625,6 +2079,10 @@ GetKResponse::mutable_val() {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

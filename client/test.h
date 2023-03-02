@@ -10,8 +10,9 @@ void testExpire(KVClient* c) {
         fprintf(stderr, "set key failed!\n");
         exit(1);
     }
-    GetRes ans = c->getK("yunfei");
-    std::cout << ans.data[0] << std::endl;
+    std::vector<std::string> ans;
+    c->getK("yunfei", ans);
+    std::cout << ans[0] << std::endl;
     res = c->setExpires("yunfei", 1000);
     if (res == MiniKV_SET_EXPIRE_SUCCESS) {
         fprintf(stdout, "set expire success!\n");
@@ -20,8 +21,8 @@ void testExpire(KVClient* c) {
         exit(1);
     }
     sleep(3);
-    ans = c->getK("yunfei");
-    std::cout << (ans.data.empty() ? "expired" : "expire doesn't work") << std::endl;
+    c->getK("yunfei", ans);
+    std::cout << (ans.empty() ? "expired" : "expire doesn't work") << std::endl;
 }
 
 void testSetLists(KVClient* c) {
@@ -34,15 +35,10 @@ void testSetLists(KVClient* c) {
             exit(1);
         }
     }
-    GetRes ans = c->getK("yunfei");
-    if (ans.encoding == MiniKV_GET_SUCCESS) {
-        fprintf(stdout, "get key success!\n");
-    } else {
-        fprintf(stderr, "get key failed!\n");
-        exit(1);
-    }
-    for (int i = 0; i < ans.data.size(); ++i) {
-        std::cout << ans.data[i] << " ";
+    std::vector<std::string> ans;
+    c->getK("yunfei", ans);
+    for (int i = 0; i < ans.size(); ++i) {
+        std::cout << ans[i] << " ";
     } std::cout << std::endl;
 }
 

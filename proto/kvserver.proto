@@ -8,6 +8,15 @@ service KVServer {
     rpc GetKV(ReqK) returns (GetKResponse) {}
     rpc DelKV(ReqK) returns (DelKVResponse) {}
     rpc SetExpire(ReqExpire) returns (SetExpireResponse) {}
+    rpc GetKeyName(ReqKeyName) returns (GetKeyNameResponse) {}
+}
+
+message GetKeyNameResponse {
+    repeated string val = 1;
+}
+
+message ReqKeyName {
+    string keyRex = 1;
 }
 
 message SetExpireResponse {

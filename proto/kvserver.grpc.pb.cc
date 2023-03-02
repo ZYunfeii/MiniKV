@@ -26,6 +26,7 @@ static const char* KVServer_method_names[] = {
   "/kv.KVServer/GetKV",
   "/kv.KVServer/DelKV",
   "/kv.KVServer/SetExpire",
+  "/kv.KVServer/GetKeyName",
 };
 
 std::unique_ptr< KVServer::Stub> KVServer::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -39,6 +40,7 @@ KVServer::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, 
   , rpcmethod_GetKV_(KVServer_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_DelKV_(KVServer_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_SetExpire_(KVServer_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GetKeyName_(KVServer_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status KVServer::Stub::SetKV(::grpc::ClientContext* context, const ::kv::ReqKV& request, ::kv::SetKVResponse* response) {
@@ -133,6 +135,29 @@ void KVServer::Stub::async::SetExpire(::grpc::ClientContext* context, const ::kv
   return result;
 }
 
+::grpc::Status KVServer::Stub::GetKeyName(::grpc::ClientContext* context, const ::kv::ReqKeyName& request, ::kv::GetKeyNameResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::kv::ReqKeyName, ::kv::GetKeyNameResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetKeyName_, context, request, response);
+}
+
+void KVServer::Stub::async::GetKeyName(::grpc::ClientContext* context, const ::kv::ReqKeyName* request, ::kv::GetKeyNameResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::kv::ReqKeyName, ::kv::GetKeyNameResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetKeyName_, context, request, response, std::move(f));
+}
+
+void KVServer::Stub::async::GetKeyName(::grpc::ClientContext* context, const ::kv::ReqKeyName* request, ::kv::GetKeyNameResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetKeyName_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::kv::GetKeyNameResponse>* KVServer::Stub::PrepareAsyncGetKeyNameRaw(::grpc::ClientContext* context, const ::kv::ReqKeyName& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::kv::GetKeyNameResponse, ::kv::ReqKeyName, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetKeyName_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::kv::GetKeyNameResponse>* KVServer::Stub::AsyncGetKeyNameRaw(::grpc::ClientContext* context, const ::kv::ReqKeyName& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncGetKeyNameRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 KVServer::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       KVServer_method_names[0],
@@ -174,6 +199,16 @@ KVServer::Service::Service() {
              ::kv::SetExpireResponse* resp) {
                return service->SetExpire(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      KVServer_method_names[4],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< KVServer::Service, ::kv::ReqKeyName, ::kv::GetKeyNameResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](KVServer::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::kv::ReqKeyName* req,
+             ::kv::GetKeyNameResponse* resp) {
+               return service->GetKeyName(ctx, req, resp);
+             }, this)));
 }
 
 KVServer::Service::~Service() {
@@ -201,6 +236,13 @@ KVServer::Service::~Service() {
 }
 
 ::grpc::Status KVServer::Service::SetExpire(::grpc::ServerContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status KVServer::Service::GetKeyName(::grpc::ServerContext* context, const ::kv::ReqKeyName* request, ::kv::GetKeyNameResponse* response) {
   (void) context;
   (void) request;
   (void) response;

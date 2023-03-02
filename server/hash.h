@@ -5,6 +5,7 @@
 #include <memory>
 #include <algorithm>
 #include <vector>
+#include <regex>
 #include "../type/encoding.h"
 #include "../log/log.h"
 typedef struct kvString {
@@ -178,6 +179,17 @@ public:
             return true;
         }
         return false;
+    }
+
+    void findKeyName(std::string keyRex, std::vector<std::string>& res) {
+        std::regex pattern(keyRex);
+        for (int i = 0; i < hash_.size(); ++i) {
+            for (auto it = hash_[i].begin(); it != hash_[i].end(); ++it) {
+                if (std::regex_search(it->get()->key, pattern)) {
+                    res.push_back(it->get()->key);
+                }
+            }
+        }
     }
 };
 

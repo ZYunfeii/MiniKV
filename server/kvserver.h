@@ -26,15 +26,21 @@ private:
         grpc::Status status = expireCallback_(context, req, res);
         return status;
     }
+    grpc::Status GetKeyName(grpc::ServerContext* context, const kv::ReqKeyName* req, kv::GetKeyNameResponse* res) override {
+        grpc::Status status = getKeyNameCallback_(context, req, res);
+        return status;
+    }
 public:
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqKV* req, kv::SetKVResponse* res)> setCallback;
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqK* req, kv::GetKResponse* res)> getCallback;
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqK* req, kv::DelKVResponse* res)> delCallback;
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqExpire* req, kv::SetExpireResponse* res)> expireCallback;
+    typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqKeyName* req, kv::GetKeyNameResponse* res)> getKeyNameCallback;
     setCallback setCallback_;
     getCallback getCallback_;
     delCallback delCallback_;
     expireCallback expireCallback_;
+    getKeyNameCallback getKeyNameCallback_;
     void setSetKVCallback(setCallback cb) {
         setCallback_ = cb;
     }
@@ -46,6 +52,9 @@ public:
     }
     void setExpireCallback(expireCallback cb) {
         expireCallback_ = cb;
+    }
+    void setGetKeyNameCallback(getKeyNameCallback cb) {
+        getKeyNameCallback_ = cb;
     }
 };
 

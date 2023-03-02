@@ -36,9 +36,8 @@ int KVClient::delK(std::string key) {
     return MiniKV_DEL_SUCCESS;
 }
 
-GetRes KVClient::getK(std::string key) {
-    if (key.empty()) return {};
-    GetRes ans;
+int KVClient::getK(std::string key, std::vector<std::string>& ans) {
+    if (key.empty()) return MiniKV_KEY_EMPTY;
     kv::ReqK req;
     kv::GetKResponse res;
     req.set_key(key);
@@ -46,18 +45,14 @@ GetRes KVClient::getK(std::string key) {
     grpc::Status status = stub_->GetKV(&context, req, &res);
     if (!status.ok() || res.flag() == false) {
         // TODO: log
-        ans.encoding = MiniKV_GET_FAIL;
-        ans.data = {};
-        return ans;
+        ans = {};
+        return MiniKV_GET_FAIL;
     }
-    std::vector<std::string> data;
-    ans.encoding = MiniKV_GET_SUCCESS;
     auto p = res.val();
     for (auto it = p.begin(); it != p.end(); ++it) {
-        data.push_back(it->data());
+        ans.push_back(it->data());
     }
-    ans.data = data;
-    return ans;
+    return MiniKV_GET_SUCCESS;
 }
 
 int KVClient::setExpires(std::string key, uint64_t millisecond) {
@@ -76,4 +71,22 @@ int KVClient::setExpires(std::string key, uint64_t millisecond) {
         return MiniKV_SET_EXPIRE_FAIL;
     }
     return MiniKV_SET_EXPIRE_SUCCESS;
+}
+
+int KVClient::getKeyName(std::string key, std::vector<std::string>& ans) {
+    if (key.empty()) return MiniKV_KEY_EMPTY;
+    kv::ReqKeyName req;
+    kv::GetKeyNameResponse res;
+    req.set_keyrex(key);
+    grpc::ClientContext context;
+    grpc::Status status = stub_->GetKeyName(&context, req, &res);
+    if (!status.ok()) {
+        // TODO: log
+        return MiniKV_GET_KEYNAME_FAIL;
+    }
+    auto p = res.val();
+    for (auto it = p.begin(); it != p.end(); ++it) {
+        ans.push_back(it->data());
+    }
+    return MiniKV_GET_KEYNAME_SUCCESS;
 }

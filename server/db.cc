@@ -79,6 +79,14 @@ int MiniKVDB::del(std::string key) {
     return hash1_->del(key);
 }
 
+void MiniKVDB::getKeyName(std::string keyRex, std::vector<std::string>& res) {
+    if (!rehashFlag_) {
+        hash1_->findKeyName(keyRex, res);
+        return;
+    }
+    hash2_->findKeyName(keyRex, res);
+}
+
 int MiniKVDB::setExpire(std::string key, uint64_t expires) {
     bool exist = hash1_->exist(key);
     if (!exist) return MiniKV_SET_EXPIRE_FAIL;

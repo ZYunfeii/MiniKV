@@ -20,6 +20,13 @@ yunfei@ubuntu:~/MiniKV/build$ ./kvctl --key zyf --operate get
 
 world hello 
 ```
+search key using regex:
+```shell
+./kvctl --keyRex .* --operate findkey
+
+zyf
+qjx
+```
 
 
 # build

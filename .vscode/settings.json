@@ -47,6 +47,7 @@
         "typeinfo": "cpp",
         "utility": "cpp",
         "string": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "bitset": "cpp"
     }
 }

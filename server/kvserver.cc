@@ -59,6 +59,18 @@ void KVServer::serviceCallbackSet() {
         res->set_flag(flag);
         return grpc::Status::OK;
     });
+
+    kvService_->setGetKeyNameCallback([this](grpc::ServerContext* context, const kv::ReqKeyName* req, kv::GetKeyNameResponse* res)->grpc::Status{
+        std::string keyRex = req->keyrex();
+        std::unique_lock<std::shared_mutex> lk(smutex_);
+        std::vector<std::string> ans;
+        db_->getKeyName(keyRex, ans);
+        lk.unlock();
+        for (auto& key : ans) {
+            res->add_val(key);
+        }
+        return grpc::Status::OK;
+    });
 }
 
 void KVServer::serve() {

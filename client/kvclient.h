@@ -6,11 +6,6 @@
 #include "../proto/kvserver.grpc.pb.h"
 #include "../type/encoding.h"
 
-typedef struct GetRes {
-    uint32_t encoding;
-    std::vector<std::string> data;
-} getRes;
-
 class KVClient {
 public:
     KVClient(std::string ip, uint32_t port);
@@ -18,7 +13,9 @@ public:
     int setKV(std::string key, std::string val, uint32_t encoding);
     int delK(std::string key);
     int setExpires(std::string key, uint64_t millisecond);
-    GetRes getK(std::string key);
+    int getK(std::string key, std::vector<std::string>& res);
+    int getKeyName(std::string keyRegex, std::vector<std::string>& res);
+    
 private:
     std::unique_ptr<kv::KVServer::Stub> stub_;
     std::string ip_;

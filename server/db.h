@@ -60,6 +60,7 @@ public:
     void get(std::string key, std::vector<std::string>& res);
     int del(std::string key);
     int setExpire(std::string key, uint64_t expires);
+    void getKeyName(std::string keyRex, std::vector<std::string>& res);
     MiniKVDB();
     ~MiniKVDB();
 
