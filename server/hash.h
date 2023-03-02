@@ -128,14 +128,13 @@ public:
     }
     int del(std::string key) {
         int slot = hash(key);
-        bool flag = false;
-        std::for_each(hash_[slot].begin(), hash_[slot].end(), [&key, &slot, &flag, this](std::shared_ptr<Entry> p) {
-            if (p.get()->key == key) {
-                hash_[slot].remove(p);
-                flag = true;
+        for (auto it = hash_[slot].begin(); it != hash_[slot].end(); ++it) {
+            if (it->get()->key == key) {
+                hash_[slot].remove(*it);
+                return MiniKV_DEL_SUCCESS;
             }
-        });
-        return flag ? MiniKV_DEL_SUCCESS : MiniKV_DEL_FAIL;
+        }
+        return MiniKV_DEL_FAIL;
     }
 
     bool needRehash() {

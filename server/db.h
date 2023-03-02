@@ -53,6 +53,7 @@ private:
     void rdbSave();
     void rehash();
     void progressiveRehash(std::shared_ptr<HashTable> hash2);
+    bool expired(std::string key);
     // void fixedTimeDeleteExpiredKey();
 public:
     void insert(std::string key, std::string val, uint32_t encoding);

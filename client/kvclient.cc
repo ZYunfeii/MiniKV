@@ -7,6 +7,7 @@ KVClient::KVClient(std::string ip, uint32_t port) : ip_(ip), port_(port) {
 }
 
 int KVClient::setKV(std::string key, std::string val, uint32_t encoding) {
+    if (key.empty()) return MiniKV_KEY_EMPTY;
     kv::ReqKV req;
     kv::SetKVResponse res;
     req.set_key(key);
@@ -22,6 +23,7 @@ int KVClient::setKV(std::string key, std::string val, uint32_t encoding) {
 }
 
 int KVClient::delK(std::string key) {
+    if (key.empty()) return MiniKV_KEY_EMPTY;
     kv::ReqK req;
     kv::DelKVResponse res;
     req.set_key(key);
@@ -35,6 +37,7 @@ int KVClient::delK(std::string key) {
 }
 
 GetRes KVClient::getK(std::string key) {
+    if (key.empty()) return {};
     GetRes ans;
     kv::ReqK req;
     kv::GetKResponse res;
@@ -58,6 +61,7 @@ GetRes KVClient::getK(std::string key) {
 }
 
 int KVClient::setExpires(std::string key, uint64_t millisecond) {
+    if (key.empty()) return MiniKV_KEY_EMPTY;
     auto now = std::chrono::system_clock::now(); 
     auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
     uint64_t expires = timestamp + millisecond;

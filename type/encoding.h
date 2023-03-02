@@ -11,7 +11,15 @@ enum {
     MiniKV_DEL_FAIL,
     MiniKV_DEL_SUCCESS,
     MiniKV_SET_EXPIRE_SUCCESS,
-    MiniKV_SET_EXPIRE_FAIL
+    MiniKV_SET_EXPIRE_FAIL,
+    MiniKV_KEY_EMPTY
+};
+
+enum {
+    KV_SET = 100,
+    KV_DEL,
+    KV_GET,
+    KV_EXPIRE
 };
 
 #endif

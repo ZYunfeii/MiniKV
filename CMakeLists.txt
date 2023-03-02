@@ -23,7 +23,12 @@ set(server_src "${server_src};${CMAKE_CURRENT_BINARY_DIR}/../log/log.cc")
 file(GLOB_RECURSE client_src "${CMAKE_CURRENT_BINARY_DIR}/../client/*.cc")
 set(client_src "${client_src};${CMAKE_CURRENT_BINARY_DIR}/../log/log.cc")
 
+set(kvctl_src "${client_src};${CMAKE_CURRENT_BINARY_DIR}/../kvctl/main.cc")
+list(REMOVE_ITEM kvctl_src "${CMAKE_CURRENT_BINARY_DIR}/../client/client_main.cc")
+
 add_executable(kvserver ${server_src})
 add_executable(kvclient ${client_src})
+add_executable(kvctl    ${kvctl_src})
 target_link_libraries(kvserver grpc_proto ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})
 target_link_libraries(kvclient grpc_proto ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})
+target_link_libraries(kvctl grpc_proto gflags ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})

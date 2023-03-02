@@ -39,10 +39,7 @@ void MiniKVDB::insert(std::string key, std::string val, uint32_t encoding) {
     progressiveRehash(hash2_);
 }
 
-void MiniKVDB::get(std::string key, std::vector<std::string>& res) {
-    // there are 2 cases for empty res:
-    // 1. exceed the time limit
-    // 2. no data
+bool MiniKVDB::expired(std::string key) {
     std::vector<std::string> e;
     expires_->get(key, e);
     if (!e.empty()) {
@@ -50,11 +47,21 @@ void MiniKVDB::get(std::string key, std::vector<std::string>& res) {
         auto now = std::chrono::system_clock::now(); 
         auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
         if (timestamp >= expires) {
-            res = std::vector<std::string>();
-            hash1_->del(key); // lazy delete mode
-            expires_->del(key);
-            return;
+            return true;
         }
+    }
+    return false;
+}
+
+void MiniKVDB::get(std::string key, std::vector<std::string>& res) {
+    // there are 2 cases for empty res:
+    // 1. exceed the time limit
+    // 2. no data
+    if (expired(key)) {
+        res = std::vector<std::string>();
+        hash1_->del(key); // lazy delete mode
+        expires_->del(key);
+        return;
     }
     if (!rehashFlag_) {
         hash1_->get(key, res);
@@ -80,6 +87,7 @@ int MiniKVDB::setExpire(std::string key, uint64_t expires) {
 }
 
 void MiniKVDB::rdbSave() {
+    if (rehashFlag_) return;
     // TODO: save the expire time
     std::unique_lock<std::shared_mutex> lk(smutex_);
     kvlogi("rdb save triggered!");
@@ -91,6 +99,7 @@ void MiniKVDB::rdbSave() {
         }
         for (auto it = d.begin(); it != d.end(); ++it) {
             std::string key = it->get()->key;
+            if (expired(key)) continue;
             uint32_t encoding = it->get()->encoding;
             void* data = it->get()->data.get();
             saveKVWithEncoding(key, encoding, data);
