@@ -7,7 +7,6 @@
 #include <vector>
 #include "../type/encoding.h"
 #include "../log/log.h"
-
 typedef struct kvString {
     uint32_t len;
     std::shared_ptr<char[]> data;
@@ -23,6 +22,9 @@ typedef struct Entry {
 class HashTable {
 public:
     std::vector<std::list<std::shared_ptr<Entry>>> hash_;
+    std::size_t keyNum_;
+    int size_;
+    int rehashIndex_;
 private:
     int hash(std::string key) {
         unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
@@ -63,6 +65,8 @@ public:
     HashTable() = delete;
     HashTable(int size) {
         hash_.resize(size);
+        keyNum_ = rehashIndex_ = 0;
+        size_ = size;
     }
     void insert(std::string key, std::string val, uint32_t encoding) {
         int slot = hash(key);
@@ -82,6 +86,13 @@ public:
         Entry* entry = new Entry;
         insertWithEncoding(entry, key, val, encoding);
         hash_[slot].push_front(std::shared_ptr<Entry>(entry)); 
+        keyNum_++;
+    }
+
+    void insertEntry(std::shared_ptr<Entry> entry, std::string key) {
+        int slot = hash(key);
+        hash_[slot].push_front(entry);
+        keyNum_++;
     }
 
     void get(std::string key, std::vector<std::string>& res) {
@@ -125,6 +136,49 @@ public:
             }
         });
         return flag ? MiniKV_DEL_SUCCESS : MiniKV_DEL_FAIL;
+    }
+
+    bool needRehash() {
+        if ((double)keyNum_ / size_ > 1.5) {
+            return true;
+        }
+        return false;
+    }
+
+    void resize(int size) {
+        hash_.resize(size);
+        size_ = size;
+    }
+
+    size_t size() {
+        return size_;
+    }
+
+    void clear() {
+        keyNum_ = rehashIndex_ = 0;
+        hash_.clear();
+    }
+
+    bool progressiveRehash(std::shared_ptr<HashTable> h2, int emptyVisits) {
+        auto& d2 = h2.get()->hash_;
+        auto& d1 = hash_;
+        for (int i = rehashIndex_; i < d1.size() && emptyVisits > 0; ++i) {
+            if (d1[i].empty()) {
+                emptyVisits--;
+                rehashIndex_ = i + 1;
+                continue;
+            }
+            for (auto it = d1[i].begin(); it != d1[i].end(); ++it) {
+                std::string key = (*it).get()->key;
+                h2->insertEntry(*it, key);
+            }
+            d1[i].clear();
+            rehashIndex_ = i + 1;
+        }
+        if (rehashIndex_ == d1.size()) {
+            return true;
+        }
+        return false;
     }
 };
 

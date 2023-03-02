@@ -39,7 +39,7 @@ public:
         if (feof(fp_)) {
             return true; // empty file
         }
-        rewind(fp_);
+        fseek(fp_,-1,SEEK_CUR);
         return false;
     }
     void clearFile() {

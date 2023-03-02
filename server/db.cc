@@ -8,13 +8,16 @@ static constexpr uint32_t sizeofChar = sizeof(char);
 
 MiniKVDB::MiniKVDB() {
     hashSize_ = HASH_SIZE_INIT;
-    hash1_ = std::unique_ptr<HashTable>(new HashTable(hashSize_));
+    hash1_ = std::shared_ptr<HashTable>(new HashTable(hashSize_));
+    hash2_ = std::shared_ptr<HashTable>(new HashTable(hashSize_));
     expires_ = std::unique_ptr<HashTable>(new HashTable(hashSize_));
     io_ = std::unique_ptr<KVio>(new KVio(RDB_FILE_NAME));
     rdbFileReadInitDB();
     rdbe_ = new rdbEntry();
     timer_ = std::shared_ptr<KVTimer>(new KVTimer());
     timer_->start(RDB_INTERVAL, std::bind(&MiniKVDB::rdbSave, this));
+    timer_->start(REHASH_DETECT_INTERVAL, std::bind(&MiniKVDB::rehash, this));
+    rehashFlag_ = false;
 }
 
 MiniKVDB::~MiniKVDB() {
@@ -24,7 +27,16 @@ MiniKVDB::~MiniKVDB() {
 }
 
 void MiniKVDB::insert(std::string key, std::string val, uint32_t encoding) {
-    hash1_->insert(key, val, encoding);
+    if (!rehashFlag_) {
+        hash1_->insert(key, val, encoding);
+        return;
+    }
+    if (hash1_->exist(key)) {
+        hash1_->insert(key, val, encoding);
+        return;
+    }
+    hash2_->insert(key, val, encoding);
+    progressiveRehash(hash2_);
 }
 
 void MiniKVDB::get(std::string key, std::vector<std::string>& res) {
@@ -44,7 +56,16 @@ void MiniKVDB::get(std::string key, std::vector<std::string>& res) {
             return;
         }
     }
-    hash1_->get(key, res);
+    if (!rehashFlag_) {
+        hash1_->get(key, res);
+        return;
+    }
+    if (hash1_->exist(key)) {
+        hash1_->get(key, res);
+        return;
+    }
+    hash2_->get(key, res);
+    progressiveRehash(hash2_);
 }
 
 int MiniKVDB::del(std::string key) {
@@ -196,4 +217,23 @@ void MiniKVDB::rdbFileReadInitDB() {
         rdbLoadEntry();
     }
     kvlogi("Rdb file loaded.");
+}
+
+void MiniKVDB::rehash() {
+    if (rehashFlag_) return;
+    std::shared_lock<std::shared_mutex> lk(smutex_);
+    if (!hash1_->needRehash()) return;
+    lk.unlock();
+    rehashFlag_ = true;
+    hash2_->resize(hash1_->size() * 2);
+}
+
+void MiniKVDB::progressiveRehash(std::shared_ptr<HashTable> h2) {
+    if (!rehashFlag_) return;
+    bool completed = hash1_->progressiveRehash(h2, REHASH_MAX_EMPTY_VISITS);
+    if (completed) {
+        rehashFlag_ = false;
+        std::swap(hash1_, hash2_);
+        hash2_->clear();
+    }
 }

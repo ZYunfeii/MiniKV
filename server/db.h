@@ -8,8 +8,10 @@
 #include <mutex>
 #include <shared_mutex>
 #define HASH_SIZE_INIT 512
-#define THREAD_POOL_NUM 4
+#define THREAD_POOL_NUM 2
 #define RDB_INTERVAL 5000 // 5000ms rdb save triggered
+#define REHASH_DETECT_INTERVAL 5000
+#define REHASH_MAX_EMPTY_VISITS 50
 #define RDB_FILE_NAME "minikv.rdb"
 
 
@@ -33,13 +35,14 @@ typedef struct rdbEntry {
 
 typedef class MiniKVDB {
 private:
-    std::unique_ptr<HashTable> hash1_;
-    std::unique_ptr<HashTable> hash2_; 
+    std::shared_ptr<HashTable> hash1_;
+    std::shared_ptr<HashTable> hash2_; 
     std::unique_ptr<HashTable> expires_;
     uint64_t hashSize_; 
     std::unique_ptr<KVio> io_;
     std::shared_ptr<KVTimer> timer_;
     rdbEntry* rdbe_;
+    bool rehashFlag_;
 
     void saveKVWithEncoding(std::string key, uint32_t encoding, void* data);
     void makeStringObject2RDBEntry(rdbEntry* rdbe, std::string key, uint32_t encoding, void* data);
@@ -48,6 +51,8 @@ private:
     void rdbFileReadInitDB();
     void rdbLoadEntry();
     void rdbSave();
+    void rehash();
+    void progressiveRehash(std::shared_ptr<HashTable> hash2);
     // void fixedTimeDeleteExpiredKey();
 public:
     void insert(std::string key, std::string val, uint32_t encoding);
