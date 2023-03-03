@@ -42,6 +42,9 @@ then you can get `kvserver` and `kvclient`.
 ./kvserver
 ```
 
+# Persistent data frame format
+![avatar](/images/dataframe.svg)
+
 # About
 - This project is based on the gRPC framework to implement the memory-based KV cache middleware, which realizes the client and server respectively. Support list, string type KV cache, data snapshot and progressive Rehash.
 

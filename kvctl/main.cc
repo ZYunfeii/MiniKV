@@ -1,5 +1,6 @@
 #include "gflags/gflags.h"
 #include "../client/kvclient.h"
+#include "draw_table.h"
 
 DEFINE_string(ip, "localhost", "ip for admin node");
 DEFINE_int32(port, 6789, "port for admin node");
@@ -34,6 +35,40 @@ std::unordered_map<std::string, int> enMap {
     {"list", MiniKV_LIST},
 };
 
+std::unordered_map<int, std::string> enStatus;
+void initResponseEncoding() {
+    enStatus[MiniKV_SET_SUCCESS] = "OK";
+    enStatus[MiniKV_GET_SUCCESS] = "OK";
+    enStatus[MiniKV_DEL_SUCCESS] = "OK";
+    enStatus[MiniKV_SET_EXPIRE_SUCCESS] = "OK";
+    enStatus[MiniKV_GET_KEYNAME_SUCCESS] = "OK";
+    enStatus[MiniKV_SET_FAIL] = "Fail!";
+    enStatus[MiniKV_GET_FAIL] = "Fail!";
+    enStatus[MiniKV_DEL_FAIL] = "Fail!";
+    enStatus[MiniKV_SET_EXPIRE_FAIL] = "Fail!";
+    enStatus[MiniKV_GET_KEYNAME_FAIL] = "Fail!";
+}
+
+void drawStatus(int ans) {
+    std::vector<std::vector<std::string>> data;
+    data.push_back({enStatus[ans]});
+    std::vector<int> max;
+    maxLenForEveryCol(data, max);
+    std::vector<std::string> head = {"Status"};
+    drawDatas(max, data, head, 1, 1);
+}
+
+void drawMultiEleOneCol(std::vector<std::string>& ans, std::string headName) {
+    std::vector<std::vector<std::string>> data;
+    for (int i = 0; i < ans.size(); ++i) {
+        data.push_back({ans[i]});
+    }
+    std::vector<int> max;
+    maxLenForEveryCol(data, max);
+    std::vector<std::string> head = {headName};
+    drawDatas(max, data, head, 1, ans.size());
+}
+
 int main(int argc, char* argv[]) {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
     KVClient* kvclient = new KVClient(FLAGS_ip, FLAGS_port);
@@ -43,34 +78,33 @@ int main(int argc, char* argv[]) {
     std::string val = FLAGS_value;
     std::string keyRex = FLAGS_keyRex;
     uint64_t expires = FLAGS_expires;
-    
+    initResponseEncoding();
     switch (oper[operation]) {
         case KV_SET : {
-            kvclient->setKV(key, val, enMap[encoding]);
+            int ans = kvclient->setKV(key, val, enMap[encoding]);
+            drawStatus(ans);
             break;
         }
         case KV_DEL : {
-            kvclient->delK(key);
+            int ans = kvclient->delK(key);
+            drawStatus(ans);
             break;
         }
         case KV_GET : {
             std::vector<std::string> ans;
             kvclient->getK(key, ans);
-            for (int i = 0; i < ans.size(); ++i) {
-                std::cout << ans[i] << std::endl;
-            } 
+            drawMultiEleOneCol(ans, "Value");
             break;
         }
         case KV_EXPIRE : {
-            kvclient->setExpires(key, expires);
+            int ans = kvclient->setExpires(key, expires);
+            drawStatus(ans);
             break;
         }
         case KV_KEY_FIND : {
             std::vector<std::string> ans;
             kvclient->getKeyName(keyRex, ans);
-            for (int i = 0; i < ans.size(); ++i) {
-                std::cout << ans[i] << std::endl;
-            } 
+            drawMultiEleOneCol(ans, "Key");
             break;
         }
     }

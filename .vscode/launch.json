@@ -25,5 +25,26 @@
                 }
             ],
         },
+        {
+            "name": "kvctl",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/kvctl",
+            "args": ["--flagfile", "${workspaceFolder}/kvctl/config.flags"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "internalConsoleOptions": "neverOpen",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": false
+                }
+            ],
+        },
     ]
 }
