@@ -31,13 +31,16 @@ void drawDatas(std::vector<int>& max, std::vector<std::vector<std::string>>& Str
 	drawLine(max, columns);
 }
 
-void maxLenForEveryCol(std::vector<std::vector<std::string>>& datas, std::vector<int>& maxLen) {
+void maxLenForEveryCol(std::vector<std::vector<std::string>>& datas, std::vector<int>& maxLen, std::vector<std::string>& head) {
     if (datas.empty()) return;
     maxLen.resize(datas[0].size());
     for (int i = 0; i < datas[0].size(); ++i) {
         for (int j = 0; j < datas.size(); ++j) {
             if (datas[j][i].size() > maxLen[i]) {
                 maxLen[i] = datas[j][i].size();
+            }
+			if (head[i].size() > maxLen[i]) {
+                maxLen[i] = head[i].size();
             }
         }
         

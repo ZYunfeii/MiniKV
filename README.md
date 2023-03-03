@@ -5,27 +5,52 @@
 Developed command line tool **kvctl**.
 value type:string
 ```shell
-yunfei@ubuntu:~/MiniKV/build$ ./kvctl --key qjx --operate set --value hello
-yunfei@ubuntu:~/MiniKV/build$ ./kvctl --key qjx --operate get
-
-hello
+yunfei@ubuntu:~/MiniKV/build$ ./kvctl --key qjx --operate set --value world --ip 43.143.229.22
++--------+
+| Status |
++--------+
+| OK     |
++--------+
+yunfei@ubuntu:~/MiniKV/build$ ./kvctl --key qjx --operate get --ip 43.143.229.22
++-------+
+| Value |
++-------+
+| world |
++-------+
 ```
 
 value type:list
 ```shell
-yunfei@ubuntu:~/MiniKV/build$ ./kvctl --key zyf --operate set --value hello --encoding list
-yunfei@ubuntu:~/MiniKV/build$ ./kvctl --key zyf --operate set --value world --encoding list
-
-yunfei@ubuntu:~/MiniKV/build$ ./kvctl --key zyf --operate get
-
-world hello 
+yunfei@ubuntu:~/MiniKV/build$ ./kvctl --key zyf --operate set --value hello --encoding list --ip 43.143.229.22
++--------+
+| Status |
++--------+
+| OK     |
++--------+
+yunfei@ubuntu:~/MiniKV/build$ ./kvctl --key zyf --operate set --value world --encoding list --ip 43.143.229.22
++--------+
+| Status |
++--------+
+| OK     |
++--------+
+yunfei@ubuntu:~/MiniKV/build$ ./kvctl --key zyf --operate get --ip 43.143.229.22
++-------+
+| Value |
++-------+
+| hello |
+| world |
++-------+
 ```
 search key using regex:
 ```shell
-./kvctl --keyRex .* --operate findkey
-
-zyf
-qjx
+yunfei@ubuntu:~/MiniKV/build$ ./kvctl --keyRex .* --operate findkey --ip 43.143.229.22
++--------+
+| Key    |
++--------+
+| zyf    |
+| yunfei |
+| qjx    |
++--------+
 ```
 
 

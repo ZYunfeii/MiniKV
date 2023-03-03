@@ -77,7 +77,7 @@ public:
                     std::list<kvString>* p = (std::list<kvString>*)(i->get()->data.get());
                     char* valBuf = new char[val.size()];
                     memcpy(valBuf, val.data(), val.size());
-                    p->push_front(kvString{(uint32_t)val.size(), std::shared_ptr<char[]>(valBuf)});
+                    p->push_back(kvString{(uint32_t)val.size(), std::shared_ptr<char[]>(valBuf)});
                 } else if (i->get()->encoding == MiniKV_STRING) {
                     insertWithEncoding(i->get(), key, val, encoding);
                 }

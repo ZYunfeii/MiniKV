@@ -53,8 +53,8 @@ void drawStatus(int ans) {
     std::vector<std::vector<std::string>> data;
     data.push_back({enStatus[ans]});
     std::vector<int> max;
-    maxLenForEveryCol(data, max);
     std::vector<std::string> head = {"Status"};
+    maxLenForEveryCol(data, max, head);
     drawDatas(max, data, head, 1, 1);
 }
 
@@ -64,8 +64,8 @@ void drawMultiEleOneCol(std::vector<std::string>& ans, std::string headName) {
         data.push_back({ans[i]});
     }
     std::vector<int> max;
-    maxLenForEveryCol(data, max);
     std::vector<std::string> head = {headName};
+    maxLenForEveryCol(data, max, head);
     drawDatas(max, data, head, 1, ans.size());
 }
 
