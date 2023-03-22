@@ -14,14 +14,19 @@ MiniKVDB::MiniKVDB() {
     io_ = std::unique_ptr<KVio>(new KVio(RDB_FILE_NAME));
     rdbFileReadInitDB();
     rdbe_ = new rdbEntry();
-    timer_ = std::shared_ptr<KVTimer>(new KVTimer());
-    timer_->start(RDB_INTERVAL, std::bind(&MiniKVDB::rdbSave, this));
-    timer_->start(REHASH_DETECT_INTERVAL, std::bind(&MiniKVDB::rehash, this));
+    timerRdb_ = std::shared_ptr<KVTimer>(new KVTimer());
+    timerRehash_ = std::shared_ptr<KVTimer>(new KVTimer());
+    timerFixedTimeDelKey_ = std::shared_ptr<KVTimer>(new KVTimer());
+    timerRdb_->start(RDB_INTERVAL, std::bind(&MiniKVDB::rdbSave, this));
+    timerRehash_->start(REHASH_DETECT_INTERVAL, std::bind(&MiniKVDB::rehash, this));
+    timerFixedTimeDelKey_->start(FIXED_TIME_DELETE_EXPIRED_KEY, std::bind(&MiniKVDB::fixedTimeDeleteExpiredKey, this));
     rehashFlag_ = false;
 }
 
 MiniKVDB::~MiniKVDB() {
-    timer_->stop();
+    timerRdb_->stop();
+    timerRehash_->stop();
+    timerFixedTimeDelKey_->stop();
     io_->flushCache();
     delete rdbe_;
 }
@@ -40,14 +45,33 @@ void MiniKVDB::insert(std::string key, std::string val, uint32_t encoding) {
 }
 
 void MiniKVDB::fixedTimeDeleteExpiredKey() {
-    
+    std::string keyRandom;
+    while (true) {
+        int expiredKeyNum = 0;
+        for (int i = 0; i < ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP; ++i) {
+            if (expires_->keyNum() <= 0) goto breakLoop;
+            keyRandom = expires_->randomKeyFind();
+            if (expired(keyRandom)) {
+                std::unique_lock<std::shared_mutex> lk(smutex_);
+                hash1_->del(keyRandom);
+                expires_->del(keyRandom);
+                lk.unlock();
+                expiredKeyNum++;
+            }
+        }
+        if (static_cast<double>(expiredKeyNum) / ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP < 0.25) {
+            goto breakLoop;
+        }
+    }
+    breakLoop:
+    return;
 }
 
 bool MiniKVDB::expired(std::string key) {
     std::vector<std::string> e;
     expires_->get(key, e);
     if (!e.empty()) {
-        uint64_t expires = stoi(e[0]);
+        uint64_t expires = stol(e[0]);
         auto now = std::chrono::system_clock::now(); 
         auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
         if (timestamp >= expires) {

@@ -12,6 +12,8 @@
 #define RDB_INTERVAL 5000 // 5000ms rdb save triggered
 #define REHASH_DETECT_INTERVAL 5000
 #define REHASH_MAX_EMPTY_VISITS 50
+#define FIXED_TIME_DELETE_EXPIRED_KEY 200
+#define ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP 20
 #define RDB_FILE_NAME "minikv.rdb"
 
 
@@ -40,7 +42,9 @@ private:
     std::unique_ptr<HashTable> expires_;
     uint64_t hashSize_; 
     std::unique_ptr<KVio> io_;
-    std::shared_ptr<KVTimer> timer_;
+    std::shared_ptr<KVTimer> timerRdb_;
+    std::shared_ptr<KVTimer> timerRehash_;
+    std::shared_ptr<KVTimer> timerFixedTimeDelKey_;
     rdbEntry* rdbe_;
     bool rehashFlag_;
 

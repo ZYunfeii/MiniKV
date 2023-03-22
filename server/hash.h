@@ -5,9 +5,11 @@
 #include <memory>
 #include <algorithm>
 #include <vector>
+#include <set>
 #include <regex>
 #include "../type/encoding.h"
 #include "../log/log.h"
+
 typedef struct kvString {
     uint32_t len;
     std::shared_ptr<char[]> data;
@@ -23,7 +25,7 @@ typedef struct Entry {
 class HashTable {
 public:
     std::vector<std::list<std::shared_ptr<Entry>>> hash_;
-    std::size_t keyNum_;
+    std::set<std::string> keySet_;
     int size_;
     int rehashIndex_;
 private:
@@ -66,7 +68,7 @@ public:
     HashTable() = delete;
     HashTable(int size) {
         hash_.resize(size);
-        keyNum_ = rehashIndex_ = 0;
+        rehashIndex_ = 0;
         size_ = size;
     }
     void insert(std::string key, std::string val, uint32_t encoding) {
@@ -84,16 +86,17 @@ public:
                 return;
             }
         }
+        // new entry
         Entry* entry = new Entry;
         insertWithEncoding(entry, key, val, encoding);
         hash_[slot].push_front(std::shared_ptr<Entry>(entry)); 
-        keyNum_++;
+        keySet_.insert(key);
     }
 
     void insertEntry(std::shared_ptr<Entry> entry, std::string key) {
         int slot = hash(key);
         hash_[slot].push_front(entry);
-        keyNum_++;
+        keySet_.insert(key);
     }
 
     void get(std::string key, std::vector<std::string>& res) {
@@ -132,6 +135,7 @@ public:
         for (auto it = hash_[slot].begin(); it != hash_[slot].end(); ++it) {
             if (it->get()->key == key) {
                 hash_[slot].remove(*it);
+                keySet_.erase(key);
                 return MiniKV_DEL_SUCCESS;
             }
         }
@@ -139,7 +143,7 @@ public:
     }
 
     bool needRehash() {
-        if ((double)keyNum_ / size_ > 1.5) {
+        if ((double)(keySet_.size()) / size_ > 1.5) {
             return true;
         }
         return false;
@@ -154,9 +158,14 @@ public:
         return size_;
     }
 
+    size_t keyNum() {
+        return keySet_.size();
+    }
+
     void clear() {
-        keyNum_ = rehashIndex_ = 0;
+        rehashIndex_ = 0;
         hash_.clear();
+        keySet_.clear();
     }
 
     bool progressiveRehash(std::shared_ptr<HashTable> h2, int emptyVisits) {
@@ -191,6 +200,13 @@ public:
             }
         }
     }
+
+    std::string randomKeyFind() {
+        auto it(keySet_.begin());
+        std::advance(it, rand() % keySet_.size());
+        return *it;
+    }
+
 };
 
 #endif
