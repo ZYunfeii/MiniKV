@@ -46,5 +46,26 @@
                 }
             ],
         },
+        {
+            "name": "kvclient",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/kvclient",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "internalConsoleOptions": "neverOpen",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": false
+                }
+            ],
+        },
     ]
 }

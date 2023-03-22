@@ -27,6 +27,7 @@ static const char* KVServer_method_names[] = {
   "/kv.KVServer/DelKV",
   "/kv.KVServer/SetExpire",
   "/kv.KVServer/GetKeyName",
+  "/kv.KVServer/SetKVStream",
 };
 
 std::unique_ptr< KVServer::Stub> KVServer::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -41,6 +42,7 @@ KVServer::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, 
   , rpcmethod_DelKV_(KVServer_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_SetExpire_(KVServer_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetKeyName_(KVServer_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_SetKVStream_(KVServer_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::BIDI_STREAMING, channel)
   {}
 
 ::grpc::Status KVServer::Stub::SetKV(::grpc::ClientContext* context, const ::kv::ReqKV& request, ::kv::SetKVResponse* response) {
@@ -158,6 +160,22 @@ void KVServer::Stub::async::GetKeyName(::grpc::ClientContext* context, const ::k
   return result;
 }
 
+::grpc::ClientReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>* KVServer::Stub::SetKVStreamRaw(::grpc::ClientContext* context) {
+  return ::grpc::internal::ClientReaderWriterFactory< ::kv::ReqKV, ::kv::SetKVResponse>::Create(channel_.get(), rpcmethod_SetKVStream_, context);
+}
+
+void KVServer::Stub::async::SetKVStream(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::kv::ReqKV,::kv::SetKVResponse>* reactor) {
+  ::grpc::internal::ClientCallbackReaderWriterFactory< ::kv::ReqKV,::kv::SetKVResponse>::Create(stub_->channel_.get(), stub_->rpcmethod_SetKVStream_, context, reactor);
+}
+
+::grpc::ClientAsyncReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>* KVServer::Stub::AsyncSetKVStreamRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderWriterFactory< ::kv::ReqKV, ::kv::SetKVResponse>::Create(channel_.get(), cq, rpcmethod_SetKVStream_, context, true, tag);
+}
+
+::grpc::ClientAsyncReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>* KVServer::Stub::PrepareAsyncSetKVStreamRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderWriterFactory< ::kv::ReqKV, ::kv::SetKVResponse>::Create(channel_.get(), cq, rpcmethod_SetKVStream_, context, false, nullptr);
+}
+
 KVServer::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       KVServer_method_names[0],
@@ -209,6 +227,16 @@ KVServer::Service::Service() {
              ::kv::GetKeyNameResponse* resp) {
                return service->GetKeyName(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      KVServer_method_names[5],
+      ::grpc::internal::RpcMethod::BIDI_STREAMING,
+      new ::grpc::internal::BidiStreamingHandler< KVServer::Service, ::kv::ReqKV, ::kv::SetKVResponse>(
+          [](KVServer::Service* service,
+             ::grpc::ServerContext* ctx,
+             ::grpc::ServerReaderWriter<::kv::SetKVResponse,
+             ::kv::ReqKV>* stream) {
+               return service->SetKVStream(ctx, stream);
+             }, this)));
 }
 
 KVServer::Service::~Service() {
@@ -246,6 +274,12 @@ KVServer::Service::~Service() {
   (void) context;
   (void) request;
   (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status KVServer::Service::SetKVStream(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::kv::SetKVResponse, ::kv::ReqKV>* stream) {
+  (void) context;
+  (void) stream;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 

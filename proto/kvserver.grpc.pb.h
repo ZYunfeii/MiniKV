@@ -70,6 +70,15 @@ class KVServer final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::GetKeyNameResponse>> PrepareAsyncGetKeyName(::grpc::ClientContext* context, const ::kv::ReqKeyName& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::kv::GetKeyNameResponse>>(PrepareAsyncGetKeyNameRaw(context, request, cq));
     }
+    std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::kv::ReqKV, ::kv::SetKVResponse>> SetKVStream(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::kv::ReqKV, ::kv::SetKVResponse>>(SetKVStreamRaw(context));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::kv::ReqKV, ::kv::SetKVResponse>> AsyncSetKVStream(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::kv::ReqKV, ::kv::SetKVResponse>>(AsyncSetKVStreamRaw(context, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::kv::ReqKV, ::kv::SetKVResponse>> PrepareAsyncSetKVStream(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::kv::ReqKV, ::kv::SetKVResponse>>(PrepareAsyncSetKVStreamRaw(context, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -83,6 +92,7 @@ class KVServer final {
       virtual void SetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void GetKeyName(::grpc::ClientContext* context, const ::kv::ReqKeyName* request, ::kv::GetKeyNameResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void GetKeyName(::grpc::ClientContext* context, const ::kv::ReqKeyName* request, ::kv::GetKeyNameResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void SetKVStream(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::kv::ReqKV,::kv::SetKVResponse>* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -98,6 +108,9 @@ class KVServer final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::SetExpireResponse>* PrepareAsyncSetExpireRaw(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::GetKeyNameResponse>* AsyncGetKeyNameRaw(::grpc::ClientContext* context, const ::kv::ReqKeyName& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::kv::GetKeyNameResponse>* PrepareAsyncGetKeyNameRaw(::grpc::ClientContext* context, const ::kv::ReqKeyName& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderWriterInterface< ::kv::ReqKV, ::kv::SetKVResponse>* SetKVStreamRaw(::grpc::ClientContext* context) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::kv::ReqKV, ::kv::SetKVResponse>* AsyncSetKVStreamRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::kv::ReqKV, ::kv::SetKVResponse>* PrepareAsyncSetKVStreamRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -137,6 +150,15 @@ class KVServer final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::GetKeyNameResponse>> PrepareAsyncGetKeyName(::grpc::ClientContext* context, const ::kv::ReqKeyName& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::kv::GetKeyNameResponse>>(PrepareAsyncGetKeyNameRaw(context, request, cq));
     }
+    std::unique_ptr< ::grpc::ClientReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>> SetKVStream(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>>(SetKVStreamRaw(context));
+    }
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>> AsyncSetKVStream(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>>(AsyncSetKVStreamRaw(context, cq, tag));
+    }
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>> PrepareAsyncSetKVStream(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>>(PrepareAsyncSetKVStreamRaw(context, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -150,6 +172,7 @@ class KVServer final {
       void SetExpire(::grpc::ClientContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
       void GetKeyName(::grpc::ClientContext* context, const ::kv::ReqKeyName* request, ::kv::GetKeyNameResponse* response, std::function<void(::grpc::Status)>) override;
       void GetKeyName(::grpc::ClientContext* context, const ::kv::ReqKeyName* request, ::kv::GetKeyNameResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void SetKVStream(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::kv::ReqKV,::kv::SetKVResponse>* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -171,11 +194,15 @@ class KVServer final {
     ::grpc::ClientAsyncResponseReader< ::kv::SetExpireResponse>* PrepareAsyncSetExpireRaw(::grpc::ClientContext* context, const ::kv::ReqExpire& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::kv::GetKeyNameResponse>* AsyncGetKeyNameRaw(::grpc::ClientContext* context, const ::kv::ReqKeyName& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::kv::GetKeyNameResponse>* PrepareAsyncGetKeyNameRaw(::grpc::ClientContext* context, const ::kv::ReqKeyName& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>* SetKVStreamRaw(::grpc::ClientContext* context) override;
+    ::grpc::ClientAsyncReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>* AsyncSetKVStreamRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReaderWriter< ::kv::ReqKV, ::kv::SetKVResponse>* PrepareAsyncSetKVStreamRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_SetKV_;
     const ::grpc::internal::RpcMethod rpcmethod_GetKV_;
     const ::grpc::internal::RpcMethod rpcmethod_DelKV_;
     const ::grpc::internal::RpcMethod rpcmethod_SetExpire_;
     const ::grpc::internal::RpcMethod rpcmethod_GetKeyName_;
+    const ::grpc::internal::RpcMethod rpcmethod_SetKVStream_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -188,6 +215,7 @@ class KVServer final {
     virtual ::grpc::Status DelKV(::grpc::ServerContext* context, const ::kv::ReqK* request, ::kv::DelKVResponse* response);
     virtual ::grpc::Status SetExpire(::grpc::ServerContext* context, const ::kv::ReqExpire* request, ::kv::SetExpireResponse* response);
     virtual ::grpc::Status GetKeyName(::grpc::ServerContext* context, const ::kv::ReqKeyName* request, ::kv::GetKeyNameResponse* response);
+    virtual ::grpc::Status SetKVStream(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::kv::SetKVResponse, ::kv::ReqKV>* stream);
   };
   template <class BaseClass>
   class WithAsyncMethod_SetKV : public BaseClass {
@@ -289,7 +317,27 @@ class KVServer final {
       ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_SetKV<WithAsyncMethod_GetKV<WithAsyncMethod_DelKV<WithAsyncMethod_SetExpire<WithAsyncMethod_GetKeyName<Service > > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_SetKVStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_SetKVStream() {
+      ::grpc::Service::MarkMethodAsync(5);
+    }
+    ~WithAsyncMethod_SetKVStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetKVStream(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::kv::SetKVResponse, ::kv::ReqKV>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSetKVStream(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::kv::SetKVResponse, ::kv::ReqKV>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncBidiStreaming(5, context, stream, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_SetKV<WithAsyncMethod_GetKV<WithAsyncMethod_DelKV<WithAsyncMethod_SetExpire<WithAsyncMethod_GetKeyName<WithAsyncMethod_SetKVStream<Service > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_SetKV : public BaseClass {
    private:
@@ -425,7 +473,30 @@ class KVServer final {
     virtual ::grpc::ServerUnaryReactor* GetKeyName(
       ::grpc::CallbackServerContext* /*context*/, const ::kv::ReqKeyName* /*request*/, ::kv::GetKeyNameResponse* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_SetKV<WithCallbackMethod_GetKV<WithCallbackMethod_DelKV<WithCallbackMethod_SetExpire<WithCallbackMethod_GetKeyName<Service > > > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_SetKVStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_SetKVStream() {
+      ::grpc::Service::MarkMethodCallback(5,
+          new ::grpc::internal::CallbackBidiHandler< ::kv::ReqKV, ::kv::SetKVResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context) { return this->SetKVStream(context); }));
+    }
+    ~WithCallbackMethod_SetKVStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetKVStream(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::kv::SetKVResponse, ::kv::ReqKV>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerBidiReactor< ::kv::ReqKV, ::kv::SetKVResponse>* SetKVStream(
+      ::grpc::CallbackServerContext* /*context*/)
+      { return nullptr; }
+  };
+  typedef WithCallbackMethod_SetKV<WithCallbackMethod_GetKV<WithCallbackMethod_DelKV<WithCallbackMethod_SetExpire<WithCallbackMethod_GetKeyName<WithCallbackMethod_SetKVStream<Service > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_SetKV : public BaseClass {
@@ -508,6 +579,23 @@ class KVServer final {
     }
     // disable synchronous version of this method
     ::grpc::Status GetKeyName(::grpc::ServerContext* /*context*/, const ::kv::ReqKeyName* /*request*/, ::kv::GetKeyNameResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_SetKVStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_SetKVStream() {
+      ::grpc::Service::MarkMethodGeneric(5);
+    }
+    ~WithGenericMethod_SetKVStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetKVStream(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::kv::SetKVResponse, ::kv::ReqKV>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -610,6 +698,26 @@ class KVServer final {
     }
     void RequestGetKeyName(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_SetKVStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_SetKVStream() {
+      ::grpc::Service::MarkMethodRaw(5);
+    }
+    ~WithRawMethod_SetKVStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetKVStream(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::kv::SetKVResponse, ::kv::ReqKV>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSetKVStream(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncBidiStreaming(5, context, stream, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -721,6 +829,29 @@ class KVServer final {
     }
     virtual ::grpc::ServerUnaryReactor* GetKeyName(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_SetKVStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_SetKVStream() {
+      ::grpc::Service::MarkMethodRawCallback(5,
+          new ::grpc::internal::CallbackBidiHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context) { return this->SetKVStream(context); }));
+    }
+    ~WithRawCallbackMethod_SetKVStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetKVStream(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::kv::SetKVResponse, ::kv::ReqKV>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerBidiReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* SetKVStream(
+      ::grpc::CallbackServerContext* /*context*/)
+      { return nullptr; }
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_SetKV : public BaseClass {

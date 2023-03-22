@@ -236,17 +236,19 @@ const char descriptor_table_protodef_kvserver_2eproto[] PROTOBUF_SECTION_VARIABL
   "\001(\t\022\013\n\003val\030\003 \001(\t\"\035\n\rSetKVResponse\022\014\n\004fla"
   "g\030\001 \001(\010\"\035\n\rDelKVResponse\022\014\n\004flag\030\001 \001(\010\"\023"
   "\n\004ReqK\022\013\n\003key\030\001 \001(\t\")\n\014GetKResponse\022\014\n\004f"
-  "lag\030\001 \001(\010\022\013\n\003val\030\002 \003(\t2\357\001\n\010KVServer\022\'\n\005S"
+  "lag\030\001 \001(\010\022\013\n\003val\030\002 \003(\t2\242\002\n\010KVServer\022\'\n\005S"
   "etKV\022\t.kv.ReqKV\032\021.kv.SetKVResponse\"\000\022%\n\005"
   "GetKV\022\010.kv.ReqK\032\020.kv.GetKResponse\"\000\022&\n\005D"
   "elKV\022\010.kv.ReqK\032\021.kv.DelKVResponse\"\000\0223\n\tS"
   "etExpire\022\r.kv.ReqExpire\032\025.kv.SetExpireRe"
   "sponse\"\000\0226\n\nGetKeyName\022\016.kv.ReqKeyName\032\026"
-  ".kv.GetKeyNameResponse\"\000b\006proto3"
+  ".kv.GetKeyNameResponse\"\000\0221\n\013SetKVStream\022"
+  "\t.kv.ReqKV\032\021.kv.SetKVResponse\"\000(\0010\001b\006pro"
+  "to3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_kvserver_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_kvserver_2eproto = {
-  false, false, 592, descriptor_table_protodef_kvserver_2eproto, "kvserver.proto", 
+  false, false, 643, descriptor_table_protodef_kvserver_2eproto, "kvserver.proto", 
   &descriptor_table_kvserver_2eproto_once, nullptr, 0, 9,
   schemas, file_default_instances, TableStruct_kvserver_2eproto::offsets,
   file_level_metadata_kvserver_2eproto, file_level_enum_descriptors_kvserver_2eproto, file_level_service_descriptors_kvserver_2eproto,

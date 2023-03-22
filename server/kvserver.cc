@@ -62,13 +62,29 @@ void KVServer::serviceCallbackSet() {
 
     kvService_->setGetKeyNameCallback([this](grpc::ServerContext* context, const kv::ReqKeyName* req, kv::GetKeyNameResponse* res)->grpc::Status{
         std::string keyRex = req->keyrex();
-        std::unique_lock<std::shared_mutex> lk(smutex_);
+        std::shared_lock<std::shared_mutex> lk(smutex_);
         std::vector<std::string> ans;
         db_->getKeyName(keyRex, ans);
         lk.unlock();
         for (auto& key : ans) {
             res->add_val(key);
         }
+        return grpc::Status::OK;
+    });
+
+    kvService_->setSetStreamCallback([this](grpc::ServerContext* context, grpc::ServerReaderWriter<kv::SetKVResponse, kv::ReqKV>* stream)->grpc::Status{
+        kv::ReqKV req;
+        kv::SetKVResponse res;
+        std::unique_lock<std::shared_mutex> lk(smutex_);
+        while (stream->Read(&req)) {
+            std::string key = req.key();
+            std::string val = req.val();
+            uint32_t encoding = req.encoding();
+            db_->insert(key, val, encoding);
+            res.set_flag(true);
+            stream->Write(res);
+        }
+        lk.unlock();
         return grpc::Status::OK;
     });
 }

@@ -9,6 +9,7 @@ service KVServer {
     rpc DelKV(ReqK) returns (DelKVResponse) {}
     rpc SetExpire(ReqExpire) returns (SetExpireResponse) {}
     rpc GetKeyName(ReqKeyName) returns (GetKeyNameResponse) {}
+    rpc SetKVStream(stream ReqKV) returns (stream SetKVResponse) {}
 }
 
 message GetKeyNameResponse {

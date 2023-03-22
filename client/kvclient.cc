@@ -22,6 +22,34 @@ int KVClient::setKV(std::string key, std::string val, uint32_t encoding) {
     return MiniKV_SET_SUCCESS;
 }
 
+int KVClient::setKVStream(std::vector<std::string> keyVec, std::vector<std::string> valVec, std::vector<uint32_t> ecVec) {
+    if (keyVec.empty()) return MiniKV_KEY_EMPTY;
+    if (keyVec.size() != valVec.size() || ecVec.size() != valVec.size()) return MiniKV_SET_FAIL;
+    grpc::ClientContext context;
+    std::shared_ptr<grpc::ClientReaderWriter<kv::ReqKV, kv::SetKVResponse>> stream(stub_->SetKVStream(&context));
+    for (int i = 0; i < keyVec.size(); ++i) {
+        kv::ReqKV req;
+        req.set_key(keyVec[i]);
+        req.set_val(valVec[i]);
+        req.set_encoding(ecVec[i]);
+        if (!stream->Write(req)) {
+            std::cout << "The stream has been closed!" << std::endl;
+            break;
+        }
+    }
+    stream->WritesDone();
+
+    kv::SetKVResponse res;
+    while (stream->Read(&res)) {
+        if (res.flag() == false) {
+            return MiniKV_SET_FAIL;
+        }
+    }
+
+    stream->Finish();
+    return MiniKV_SET_SUCCESS;
+}
+
 int KVClient::delK(std::string key) {
     if (key.empty()) return MiniKV_KEY_EMPTY;
     kv::ReqK req;

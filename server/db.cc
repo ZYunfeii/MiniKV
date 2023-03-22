@@ -39,6 +39,10 @@ void MiniKVDB::insert(std::string key, std::string val, uint32_t encoding) {
     progressiveRehash(hash2_);
 }
 
+void MiniKVDB::fixedTimeDeleteExpiredKey() {
+    
+}
+
 bool MiniKVDB::expired(std::string key) {
     std::vector<std::string> e;
     expires_->get(key, e);

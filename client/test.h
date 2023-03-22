@@ -42,4 +42,11 @@ void testSetLists(KVClient* c) {
     } std::cout << std::endl;
 }
 
+void testSetStream(KVClient* c) {
+    std::vector<std::string> keyVec = {"topic1", "topic2", "topic3"};
+    std::vector<std::string> valVec = {"1", "2", "3"};
+    std::vector<uint32_t> ecVec = {MiniKV_STRING, MiniKV_STRING, MiniKV_STRING};
+    c->setKVStream(keyVec, valVec, ecVec);
+}
+
 #endif

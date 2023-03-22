@@ -54,7 +54,7 @@ private:
     void rehash();
     void progressiveRehash(std::shared_ptr<HashTable> hash2);
     bool expired(std::string key);
-    // void fixedTimeDeleteExpiredKey();
+    void fixedTimeDeleteExpiredKey();
 public:
     void insert(std::string key, std::string val, uint32_t encoding);
     void get(std::string key, std::vector<std::string>& res);

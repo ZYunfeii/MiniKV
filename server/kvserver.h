@@ -30,17 +30,23 @@ private:
         grpc::Status status = getKeyNameCallback_(context, req, res);
         return status;
     }
+    grpc::Status SetKVStream(grpc::ServerContext* context, grpc::ServerReaderWriter<kv::SetKVResponse, kv::ReqKV>* stream) override {
+        grpc::Status status = setStreamCallback_(context, stream);
+        return status;
+    }
 public:
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqKV* req, kv::SetKVResponse* res)> setCallback;
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqK* req, kv::GetKResponse* res)> getCallback;
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqK* req, kv::DelKVResponse* res)> delCallback;
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqExpire* req, kv::SetExpireResponse* res)> expireCallback;
     typedef std::function<grpc::Status(grpc::ServerContext* context, const kv::ReqKeyName* req, kv::GetKeyNameResponse* res)> getKeyNameCallback;
+    typedef std::function<grpc::Status(grpc::ServerContext* context, grpc::ServerReaderWriter<kv::SetKVResponse, kv::ReqKV>* stream)> setStreamCallback;
     setCallback setCallback_;
     getCallback getCallback_;
     delCallback delCallback_;
     expireCallback expireCallback_;
     getKeyNameCallback getKeyNameCallback_;
+    setStreamCallback setStreamCallback_;
     void setSetKVCallback(setCallback cb) {
         setCallback_ = cb;
     }
@@ -55,6 +61,9 @@ public:
     }
     void setGetKeyNameCallback(getKeyNameCallback cb) {
         getKeyNameCallback_ = cb;
+    }
+    void setSetStreamCallback(setStreamCallback cb) {
+        setStreamCallback_ = cb;
     }
 };
 

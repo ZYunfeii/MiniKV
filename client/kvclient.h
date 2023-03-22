@@ -15,6 +15,7 @@ public:
     int setExpires(std::string key, uint64_t millisecond);
     int getK(std::string key, std::vector<std::string>& res);
     int getKeyName(std::string keyRegex, std::vector<std::string>& res);
+    int setKVStream(std::vector<std::string> keyVec, std::vector<std::string> valVec, std::vector<uint32_t> ecVec);
     
 private:
     std::unique_ptr<kv::KVServer::Stub> stub_;
