@@ -9,7 +9,7 @@
 
 int main(int argc, char** argv) {
     KVClient* kvclient = new KVClient("127.0.0.1", 6789);
-    // testExpire(kvclient);
-    testFixedTimeDelKeyExpired(kvclient);
+    testExpire(kvclient);
+    // testFixedTimeDelKeyExpired(kvclient);
     return 0;
 }

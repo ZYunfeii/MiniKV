@@ -14,12 +14,16 @@ MiniKVDB::MiniKVDB() {
     io_ = std::unique_ptr<KVio>(new KVio(RDB_FILE_NAME));
     rdbFileReadInitDB();
     rdbe_ = new rdbEntry();
+
     timerRdb_ = std::shared_ptr<KVTimer>(new KVTimer());
     timerRehash_ = std::shared_ptr<KVTimer>(new KVTimer());
     timerFixedTimeDelKey_ = std::shared_ptr<KVTimer>(new KVTimer());
+    timerMemoryDetect_ = std::shared_ptr<KVTimer>(new KVTimer());
+
     timerRdb_->start(RDB_INTERVAL, std::bind(&MiniKVDB::rdbSave, this));
     timerRehash_->start(REHASH_DETECT_INTERVAL, std::bind(&MiniKVDB::rehash, this));
     timerFixedTimeDelKey_->start(FIXED_TIME_DELETE_EXPIRED_KEY, std::bind(&MiniKVDB::fixedTimeDeleteExpiredKey, this));
+    timerMemoryDetect_->start(MEMORY_DETECT_INTERVAL, std::bind(&MiniKVDB::memoryDetector, this));
     rehashFlag_ = false;
 }
 
@@ -27,20 +31,27 @@ MiniKVDB::~MiniKVDB() {
     timerRdb_->stop();
     timerRehash_->stop();
     timerFixedTimeDelKey_->stop();
+    timerMemoryDetect_->stop();
     io_->flushCache();
     delete rdbe_;
 }
 
 void MiniKVDB::insert(std::string key, std::string val, uint32_t encoding) {
     if (!rehashFlag_) {
+        std::unique_lock<std::shared_mutex> lk(smutex_);
         hash1_->insert(key, val, encoding);
+        expires_->update(key);
         return;
     }
     if (hash1_->exist(key)) {
+        std::unique_lock<std::shared_mutex> lk(smutex_);
         hash1_->insert(key, val, encoding);
+        expires_->update(key);
         return;
     }
+    std::unique_lock<std::shared_mutex> lk(smutex_);
     hash2_->insert(key, val, encoding);
+    expires_->update(key);
     progressiveRehash(hash2_);
 }
 
@@ -71,7 +82,7 @@ bool MiniKVDB::expired(std::string key) {
     std::vector<std::string> e;
     expires_->get(key, e);
     if (!e.empty()) {
-        uint64_t expires = stol(e[0]);
+        uint64_t expires = stol(e[0]); // use stoi may throw out of range error
         auto now = std::chrono::system_clock::now(); 
         auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
         if (timestamp >= expires) {
@@ -85,29 +96,52 @@ void MiniKVDB::get(std::string key, std::vector<std::string>& res) {
     // there are 2 cases for empty res:
     // 1. exceed the time limit
     // 2. no data
+    std::unique_lock<std::shared_mutex> lkS(smutex_);
     if (expired(key)) {
         res = std::vector<std::string>();
         hash1_->del(key); // lazy delete mode
         expires_->del(key);
+        lkS.unlock();
         return;
     }
     if (!rehashFlag_) {
         hash1_->get(key, res);
+        expires_->update(key);
+        lkS.unlock();
         return;
     }
     if (hash1_->exist(key)) {
         hash1_->get(key, res);
+        expires_->update(key);
+        lkS.unlock();
         return;
     }
     hash2_->get(key, res);
+    expires_->update(key);
+    lkS.unlock();
+    std::unique_lock<std::shared_mutex> lk(smutex_);
     progressiveRehash(hash2_);
+    lk.unlock();
 }
 
 int MiniKVDB::del(std::string key) {
-    return hash1_->del(key);
+    std::unique_lock<std::shared_mutex> lk(smutex_);
+    int flag;
+    if (rehashFlag_) {
+        int f1 = hash1_->del(key);
+        int f2 = hash2_->del(key);
+        expires_->del(key);
+        flag = (f1 == MiniKV_DEL_SUCCESS || f2 == MiniKV_DEL_SUCCESS);
+    } else {
+        int f1 = hash1_->del(key);
+        expires_->del(key);
+        flag = (f1 == MiniKV_DEL_SUCCESS);
+    }
+    return flag ? MiniKV_DEL_SUCCESS : MiniKV_DEL_FAIL;
 }
 
 void MiniKVDB::getKeyName(std::string keyRex, std::vector<std::string>& res) {
+    std::shared_lock<std::shared_mutex> lk(smutex_);
     if (!rehashFlag_) {
         hash1_->findKeyName(keyRex, res);
         return;
@@ -118,6 +152,7 @@ void MiniKVDB::getKeyName(std::string keyRex, std::vector<std::string>& res) {
 int MiniKVDB::setExpire(std::string key, uint64_t expires) {
     bool exist = hash1_->exist(key);
     if (!exist) return MiniKV_SET_EXPIRE_FAIL;
+    std::unique_lock<std::shared_mutex> lk(smutex_);
     expires_->insert(key, to_string(expires), MiniKV_STRING);
     return MiniKV_SET_EXPIRE_SUCCESS;
 }
@@ -280,5 +315,42 @@ void MiniKVDB::progressiveRehash(std::shared_ptr<HashTable> h2) {
         rehashFlag_ = false;
         std::swap(hash1_, hash2_);
         hash2_->clear();
+    }
+}
+
+uint32_t MiniKVDB::getVmrss() {
+    int pid = getpid();
+    std::string file_name = "/proc/" + to_string(pid) + "/status";
+    ifstream file(file_name);
+    std::string line;
+    uint32_t vmrss = 0;
+    while (getline(file, line)) {
+        if (line.find("VmRSS") != string::npos)
+        {
+            vmrss = stoi(line.substr(line.find(" ")));
+            break;
+        } 
+    }
+    return vmrss;
+}
+
+void MiniKVDB::memoryDetector() {
+    uint32_t vmrss = getVmrss();
+    if (vmrss > MAX_MEMORY_KB) {
+        memoryObsolescence();
+    }
+}
+
+void MiniKVDB::memoryObsolescence() {
+    std::unique_lock<std::shared_mutex> lk(smutex_);
+    int keyNum = expires_->keyNum();
+    for (int i = 0; i < keyNum; ++i) {
+        std::string waitingToDelKey = expires_->lru_.lastKey();
+        hash1_->del(waitingToDelKey);
+        hash2_->del(waitingToDelKey);
+        expires_->del(waitingToDelKey);
+        if (i % 10 && getVmrss() <= MAX_MEMORY_KB) {
+            break;
+        }
     }
 }

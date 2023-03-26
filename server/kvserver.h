@@ -7,7 +7,6 @@
 #include <grpcpp/grpcpp.h>
 #include "../proto/kvserver.grpc.pb.h"
 #include "db.h"
-extern std::shared_mutex smutex_;
 class KVService final : public kv::KVServer::Service {
 private:
     grpc::Status SetKV(grpc::ServerContext* context, const kv::ReqKV* req, kv::SetKVResponse* res) override {      

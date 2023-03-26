@@ -9,6 +9,7 @@
 #include <regex>
 #include "../type/encoding.h"
 #include "../log/log.h"
+#include "lru.h"
 
 typedef struct kvString {
     uint32_t len;
@@ -25,10 +26,12 @@ typedef struct Entry {
 class HashTable {
 public:
     std::vector<std::list<std::shared_ptr<Entry>>> hash_;
+    LRUCache lru_;
+private:
+    
     std::set<std::string> keySet_;
     int size_;
     int rehashIndex_;
-private:
     int hash(std::string key) {
         unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
         unsigned int hash = 0;
@@ -74,14 +77,17 @@ public:
     void insert(std::string key, std::string val, uint32_t encoding) {
         int slot = hash(key);
         for (auto i = hash_[slot].begin(); i != hash_[slot].end(); ++i) {
+            // key already exists, update!
             if (i->get()->key == key) {
                 if (i->get()->encoding == MiniKV_LIST) {
                     std::list<kvString>* p = (std::list<kvString>*)(i->get()->data.get());
                     char* valBuf = new char[val.size()];
                     memcpy(valBuf, val.data(), val.size());
                     p->push_back(kvString{(uint32_t)val.size(), std::shared_ptr<char[]>(valBuf)});
+                    lru_.update(key);
                 } else if (i->get()->encoding == MiniKV_STRING) {
                     insertWithEncoding(i->get(), key, val, encoding);
+                    lru_.update(key);
                 }
                 return;
             }
@@ -91,12 +97,14 @@ public:
         insertWithEncoding(entry, key, val, encoding);
         hash_[slot].push_front(std::shared_ptr<Entry>(entry)); 
         keySet_.insert(key);
+        lru_.insert(key);
     }
 
     void insertEntry(std::shared_ptr<Entry> entry, std::string key) {
         int slot = hash(key);
         hash_[slot].push_front(entry);
         keySet_.insert(key);
+        lru_.insert(key);
     }
 
     void get(std::string key, std::vector<std::string>& res) {
@@ -107,16 +115,15 @@ public:
                     kvString* kvStr = (kvString*)(i->get()->data.get());
                     std::string s(kvStr->data.get(), kvStr->data.get() + kvStr->len);
                     res.push_back(s);
+                    lru_.update(key);
                 }
                 if (i->get()->encoding == MiniKV_LIST) {
                     std::list<kvString>* p = (std::list<kvString>*)(i->get()->data.get());
-                    if (p->empty()) {
-                    } else {
-                        for (auto it = p->begin(); it != p->end(); ++it) {
-                            std::string s(it->data.get(), it->data.get() + it->len);
-                            res.push_back(s);
-                        }
+                    for (auto it = p->begin(); it != p->end(); ++it) {
+                        std::string s(it->data.get(), it->data.get() + it->len);
+                        res.push_back(s);
                     }
+                    lru_.update(key);
                 }
             }
         }   
@@ -136,6 +143,7 @@ public:
             if (it->get()->key == key) {
                 hash_[slot].remove(*it);
                 keySet_.erase(key);
+                lru_.remove(key);
                 return MiniKV_DEL_SUCCESS;
             }
         }
@@ -180,6 +188,7 @@ public:
             for (auto it = d1[i].begin(); it != d1[i].end(); ++it) {
                 std::string key = (*it).get()->key;
                 h2->insertEntry(*it, key);
+                lru_.remove(key);
             }
             d1[i].clear();
             rehashIndex_ = i + 1;
@@ -205,6 +214,11 @@ public:
         auto it(keySet_.begin());
         std::advance(it, rand() % keySet_.size());
         return *it;
+    }
+
+    void update(std::string& key) {
+        if (!exist(key)) return;
+        lru_.update(key);
     }
 
 };

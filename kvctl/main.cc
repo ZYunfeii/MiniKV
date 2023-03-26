@@ -104,6 +104,9 @@ int main(int argc, char* argv[]) {
         case KV_KEY_FIND : {
             std::vector<std::string> ans;
             kvclient->getKeyName(keyRex, ans);
+            if (ans.empty()) {
+                ans.push_back("empty!");
+            }
             drawMultiEleOneCol(ans, "Key");
             break;
         }

@@ -1,6 +1,9 @@
 #ifndef DB_H
 #define DB_H
 
+#include <sys/resource.h>
+#include <fstream>
+#include <unistd.h>
 #include "hash.h"
 #include "io.h"
 #include "../threadpool/threadpool.h"
@@ -14,6 +17,9 @@
 #define REHASH_MAX_EMPTY_VISITS 50
 #define FIXED_TIME_DELETE_EXPIRED_KEY 200
 #define ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP 20
+#define MEMORY_DETECT_INTERVAL 1000
+
+#define MAX_MEMORY_KB 100000 // kb
 #define RDB_FILE_NAME "minikv.rdb"
 
 
@@ -45,6 +51,7 @@ private:
     std::shared_ptr<KVTimer> timerRdb_;
     std::shared_ptr<KVTimer> timerRehash_;
     std::shared_ptr<KVTimer> timerFixedTimeDelKey_;
+    std::shared_ptr<KVTimer> timerMemoryDetect_;
     rdbEntry* rdbe_;
     bool rehashFlag_;
 
@@ -59,6 +66,9 @@ private:
     void progressiveRehash(std::shared_ptr<HashTable> hash2);
     bool expired(std::string key);
     void fixedTimeDeleteExpiredKey();
+    void memoryDetector();
+    void memoryObsolescence();
+    uint32_t getVmrss();
 public:
     void insert(std::string key, std::string val, uint32_t encoding);
     void get(std::string key, std::vector<std::string>& res);
