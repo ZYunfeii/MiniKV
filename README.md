@@ -70,6 +70,8 @@ then you can get `kvserver` and `kvclient`.
 # Persistent data frame format
 ![avatar](/images/dataframe.svg)
 
+# Performance
+Currently, no performance optimization has been done. TPS 10000+.
 # About
 - This project is based on the gRPC framework to implement the memory-based KV cache middleware, which realizes the client and server respectively. Support list, string type KV cache, data snapshot and progressive Rehash.
 

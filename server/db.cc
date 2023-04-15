@@ -38,6 +38,7 @@ MiniKVDB::~MiniKVDB() {
 
 void MiniKVDB::insert(std::string key, std::string val, uint32_t encoding) {
     if (!rehashFlag_) {
+        // ps. 面阿里的时候面试官说可以优化锁，这里锁粒度比较大，优化到每个hash slot上
         std::unique_lock<std::shared_mutex> lk(smutex_);
         hash1_->insert(key, val, encoding);
         expires_->update(key);

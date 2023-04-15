@@ -49,6 +49,7 @@
         "string": "cpp",
         "shared_mutex": "cpp",
         "bitset": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "*.inc": "cpp"
     }
 }
