@@ -97,9 +97,10 @@ void MiniKVDB::get(std::string key, std::vector<std::string>& res) {
     // there are 2 cases for empty res:
     // 1. exceed the time limit
     // 2. no data
-    std::unique_lock<std::shared_mutex> lkS(smutex_);
+    
     if (expired(key)) {
         res = std::vector<std::string>();
+        std::unique_lock<std::shared_mutex> lkS(smutex_);
         hash1_->del(key); // lazy delete mode
         expires_->del(key);
         lkS.unlock();
@@ -107,19 +108,25 @@ void MiniKVDB::get(std::string key, std::vector<std::string>& res) {
     }
     if (!rehashFlag_) {
         hash1_->get(key, res);
-        expires_->update(key);
-        lkS.unlock();
+        if (expires_->exist(key)) {
+            std::unique_lock<std::shared_mutex> lkS(smutex_);
+            expires_->update(key);
+        }
         return;
     }
     if (hash1_->exist(key)) {
         hash1_->get(key, res);
-        expires_->update(key);
-        lkS.unlock();
+        if (expires_->exist(key)) {
+            std::unique_lock<std::shared_mutex> lkS(smutex_);
+            expires_->update(key);
+        }
         return;
     }
     hash2_->get(key, res);
-    expires_->update(key);
-    lkS.unlock();
+    if (expires_->exist(key)) {
+        std::unique_lock<std::shared_mutex> lkS(smutex_);
+        expires_->update(key);
+    }
     std::unique_lock<std::shared_mutex> lk(smutex_);
     progressiveRehash(hash2_);
     lk.unlock();

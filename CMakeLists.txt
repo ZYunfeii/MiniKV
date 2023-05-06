@@ -29,11 +29,22 @@ list(REMOVE_ITEM kvctl_src "${CMAKE_CURRENT_BINARY_DIR}/../client/client_main.cc
 set(performance_test_src "${client_src};${CMAKE_CURRENT_BINARY_DIR}/../performance/performance_test.cc")
 list(REMOVE_ITEM performance_test_src "${CMAKE_CURRENT_BINARY_DIR}/../client/client_main.cc")
 
+set(performance_test_multi_process_src "${client_src};${CMAKE_CURRENT_BINARY_DIR}/../performance/performance_test_multi_process.cc")
+list(REMOVE_ITEM performance_test_multi_process_src "${CMAKE_CURRENT_BINARY_DIR}/../client/client_main.cc")
+
+set(child_process_src "${client_src};${CMAKE_CURRENT_BINARY_DIR}/../performance/child_process.cc")
+list(REMOVE_ITEM child_process_src "${CMAKE_CURRENT_BINARY_DIR}/../client/client_main.cc")
+
 add_executable(kvserver ${server_src})
 add_executable(kvclient ${client_src})
 add_executable(kvctl    ${kvctl_src})
 add_executable(performance_test    ${performance_test_src})
+add_executable(performance_test_multi_process    ${performance_test_multi_process_src})
+add_executable(child_process    ${child_process_src})
+
 target_link_libraries(kvserver grpc_proto ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})
 target_link_libraries(kvclient grpc_proto ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})
 target_link_libraries(kvctl grpc_proto gflags ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})
 target_link_libraries(performance_test grpc_proto gflags ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})
+target_link_libraries(performance_test_multi_process grpc_proto gflags ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})
+target_link_libraries(child_process grpc_proto gflags ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})

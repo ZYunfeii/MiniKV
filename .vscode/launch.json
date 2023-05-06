@@ -88,5 +88,47 @@
                 }
             ],
         },
+        {
+            "name": "performance_test_multi_process",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/performance_test_multi_process",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [],
+            "externalConsole": false,
+            "internalConsoleOptions": "neverOpen",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": false
+                }
+            ],
+        },
+        {
+            "name": "child_process",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/child_process",
+            "args": ["5", "0"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [],
+            "externalConsole": false,
+            "internalConsoleOptions": "neverOpen",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": false
+                }
+            ],
+        },
     ]
 }
